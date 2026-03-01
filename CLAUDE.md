@@ -29,3 +29,19 @@ Each domain has a spec file that defines the data model, business rules, operati
 - Do not add sync, cloud backup, or external integrations (out of scope).
 
 See [docs/conventions.md](docs/conventions.md) for coding conventions (DTOs, naming, etc.).
+
+## Autonomous Workflow
+
+When given a task, Claude should work fully autonomously and deliver a pull request:
+
+1. **Branch** — create a feature branch: `feat/<short-kebab-description>` (e.g. `feat/add-session-notes`)
+2. **Implement** — read relevant domain specs and conventions before writing code
+3. **Verify** — run `npm run build` and `npm run test` (if tests exist); fix any errors before proceeding
+4. **Commit** — write a conventional commit message (`feat:`, `fix:`, `refactor:`, etc.)
+5. **Push** — push the branch to `origin`
+6. **PR** — open a pull request against `main` using `gh pr create` with:
+   - A concise title (under 70 chars)
+   - A body summarising what changed and why, plus a short test plan
+   - Label `auto` if available
+
+Never force-push to `main`. Never skip broken builds — fix them first.
