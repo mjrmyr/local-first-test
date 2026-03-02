@@ -23,8 +23,20 @@
     --color-info: #3AAFC0;
 }
 
+html,
 body {
     background-color: #0D1F30;
+    overflow: hidden;
+    overscroll-behavior: none;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+}
+
+/* iOS Safari renders date inputs wider than other inputs by default */
+input[type='date'] {
+    appearance: none;
+    -webkit-appearance: none;
 }
 
 @media (prefers-color-scheme: light) {
@@ -38,6 +50,7 @@ body {
         --color-navy: #0D1F30;
     }
 
+    html,
     body {
         background-color: #F3F6F9;
     }

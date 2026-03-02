@@ -33,7 +33,7 @@ export function SettingsPage() {
     const navigate = useNavigate();
 
     return (
-        <div className="flex min-h-screen flex-col bg-canvas">
+        <div className="flex flex-col bg-canvas">
             <header className="flex items-center px-6 py-4 border-b border-navy/10">
                 <h1 className="text-lg font-bold text-foreground">Settings</h1>
             </header>
