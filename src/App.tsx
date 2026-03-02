@@ -6,6 +6,8 @@ import { OnboardingPage } from './ui/pages/OnboardingPage';
 import { ProfilePage } from './ui/pages/ProfilePage';
 import { TrainingZonesPage } from './ui/pages/TrainingZonesPage';
 import { TrainingZoneEditorPage } from './ui/pages/TrainingZoneEditorPage';
+import { ThresholdsPage } from './ui/pages/ThresholdsPage';
+import { ThresholdEditorPage } from './ui/pages/ThresholdEditorPage';
 
 type AppStatus = 'loading' | 'onboarding' | 'ready';
 
@@ -70,6 +72,24 @@ function App() {
                 path="/training-zones/:discipline/:metric/edit"
                 element={
                     status === 'ready' ? <TrainingZoneEditorPage /> : <Navigate to="/onboarding" replace />
+                }
+            />
+            <Route
+                path="/thresholds"
+                element={
+                    status === 'ready' ? <ThresholdsPage /> : <Navigate to="/onboarding" replace />
+                }
+            />
+            <Route
+                path="/thresholds/new"
+                element={
+                    status === 'ready' ? <ThresholdEditorPage /> : <Navigate to="/onboarding" replace />
+                }
+            />
+            <Route
+                path="/thresholds/:discipline/:metric/edit"
+                element={
+                    status === 'ready' ? <ThresholdEditorPage /> : <Navigate to="/onboarding" replace />
                 }
             />
         </Routes>
