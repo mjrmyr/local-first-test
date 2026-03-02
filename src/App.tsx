@@ -4,6 +4,8 @@ import { athleteService } from './application/athleteService';
 import { HomePage } from './ui/pages/HomePage';
 import { OnboardingPage } from './ui/pages/OnboardingPage';
 import { ProfilePage } from './ui/pages/ProfilePage';
+import { TrainingZonesPage } from './ui/pages/TrainingZonesPage';
+import { TrainingZoneEditorPage } from './ui/pages/TrainingZoneEditorPage';
 
 type AppStatus = 'loading' | 'onboarding' | 'ready';
 
@@ -50,6 +52,24 @@ function App() {
                 path="/profile"
                 element={
                     status === 'ready' ? <ProfilePage /> : <Navigate to="/onboarding" replace />
+                }
+            />
+            <Route
+                path="/training-zones"
+                element={
+                    status === 'ready' ? <TrainingZonesPage /> : <Navigate to="/onboarding" replace />
+                }
+            />
+            <Route
+                path="/training-zones/new"
+                element={
+                    status === 'ready' ? <TrainingZoneEditorPage /> : <Navigate to="/onboarding" replace />
+                }
+            />
+            <Route
+                path="/training-zones/:discipline/:metric/edit"
+                element={
+                    status === 'ready' ? <TrainingZoneEditorPage /> : <Navigate to="/onboarding" replace />
                 }
             />
         </Routes>
