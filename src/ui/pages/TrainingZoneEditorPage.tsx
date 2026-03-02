@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
 import { trainingZoneService } from '../../application/trainingZoneService';
 import { VALID_ZONE_COMBINATIONS, type TrainingZone } from '../../domain/models/trainingZone';
 import type { Discipline, Metric } from '../../domain/types';
@@ -48,15 +47,15 @@ function zoneRowToZone(row: ZoneRow, metric: Metric): TrainingZone {
     };
 }
 
-export function TrainingZoneEditorPage() {
-    const navigate = useNavigate();
-    const { discipline: paramDiscipline, metric: paramMetric } = useParams<{
-        discipline: Discipline;
-        metric: Metric;
-    }>();
+interface Props {
+    isEditing: boolean;
+    discipline?: Discipline;
+    metric?: Metric;
+    onBack: () => void;
+    onSave: () => void;
+}
 
-    const isEditing = paramDiscipline !== undefined && paramMetric !== undefined;
-
+export function TrainingZoneEditorPage({ isEditing, discipline: paramDiscipline, metric: paramMetric, onBack, onSave }: Props) {
     const [discipline, setDiscipline] = useState<Discipline | ''>(paramDiscipline ?? '');
     const [metric, setMetric] = useState<Metric | ''>(paramMetric ?? '');
     const [rows, setRows] = useState<ZoneRow[]>([{ name: '', min: '', max: '' }]);
@@ -199,7 +198,7 @@ export function TrainingZoneEditorPage() {
         setSubmitting(false);
 
         if (result.ok) {
-            navigate('/training-zones');
+            onSave();
         } else {
             setSubmitError(result.error);
         }
@@ -221,7 +220,7 @@ export function TrainingZoneEditorPage() {
         <div className="flex min-h-screen flex-col bg-[#fff4e1]">
             <header className="flex items-center gap-3 px-6 py-4 border-b border-orange-100">
                 <button
-                    onClick={() => navigate('/training-zones')}
+                    onClick={onBack}
                     className="text-sm font-medium text-gray-500 hover:text-gray-700"
                 >
                     ← Back
