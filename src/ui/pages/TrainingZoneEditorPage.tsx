@@ -1,22 +1,17 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { trainingZoneService } from '../../application/trainingZoneService';
-import type { TrainingZone } from '../../domain/models/trainingZone';
+import { VALID_ZONE_COMBINATIONS, type TrainingZone } from '../../domain/models/trainingZone';
 import type { Discipline, Metric } from '../../domain/types';
 import type { ZoneRowErrors } from '../../domain/rules/validateTrainingZones';
 import { validateTrainingZones } from '../../domain/rules/validateTrainingZones';
 import { Button } from '../components/Button';
 import { FormField } from '../components/FormField';
 import { Input } from '../components/Input';
+import { PaceInput } from '../components/PaceInput';
+import { formatSecondsToMmSs, parseMmSsToSeconds } from '@/helpers/pace';
 
-// Valid discipline/metric combinations per spec
-const VALID_METRICS: Record<Discipline, Metric[]> = {
-    swim: ['pace'],
-    bike: ['power', 'hr'],
-    run: ['pace', 'hr'],
-};
-
-const DISCIPLINE_OPTIONS: { value: Discipline; label: string }[] = [
+const ALL_DISCIPLINE_OPTIONS: { value: Discipline; label: string }[] = [
     { value: 'swim', label: 'Swimming' },
     { value: 'bike', label: 'Cycling' },
     { value: 'run', label: 'Running' },
@@ -28,22 +23,6 @@ const METRIC_LABELS: Record<Metric, string> = {
     power: 'Power (watts)',
 };
 
-// Pace format helpers (seconds ↔ mm:ss)
-function formatPace(seconds: number): string {
-    const m = Math.floor(seconds / 60);
-    const s = seconds % 60;
-    return `${m}:${s.toString().padStart(2, '0')}`;
-}
-
-function parsePace(value: string): number {
-    const parts = value.split(':');
-    if (parts.length !== 2) return NaN;
-    const m = Number(parts[0]);
-    const s = Number(parts[1]);
-    if (isNaN(m) || isNaN(s)) return NaN;
-    return m * 60 + s;
-}
-
 // Zone row as string values for form state
 interface ZoneRow {
     name: string;
@@ -52,12 +31,12 @@ interface ZoneRow {
 }
 
 function toZoneRow(zone: TrainingZone, metric: Metric): ZoneRow {
-    const fmt = (v: number) => (metric === 'pace' ? formatPace(v) : String(v));
+    const fmt = (v: number) => (metric === 'pace' ? formatSecondsToMmSs(v) : String(v));
     return { name: zone.name, min: fmt(zone.min), max: fmt(zone.max) };
 }
 
 function parseZoneValue(value: string, metric: Metric): number {
-    if (metric === 'pace') return parsePace(value);
+    if (metric === 'pace') return parseMmSsToSeconds(value) ?? NaN;
     return Number(value);
 }
 
@@ -88,34 +67,55 @@ export function TrainingZoneEditorPage() {
     const [zoneRowErrors, setZoneRowErrors] = useState<ZoneRowErrors[]>([]);
     const [submitError, setSubmitError] = useState('');
     const [submitting, setSubmitting] = useState(false);
-    const [loading, setLoading] = useState(isEditing);
+    const [loading, setLoading] = useState(true);
+    const [configuredCombinations, setConfiguredCombinations] = useState<Set<string>>(new Set());
 
     useEffect(() => {
-        if (!isEditing) return;
-        trainingZoneService
-            .getActive(paramDiscipline as Discipline, paramMetric as Metric)
-            .then((result) => {
-                if (result.ok && result.data) {
-                    setRows(
-                        result.data.zones.map((z) =>
-                            toZoneRow(z, paramMetric as Metric),
-                        ),
+        if (isEditing) {
+            trainingZoneService
+                .getActive(paramDiscipline as Discipline, paramMetric as Metric)
+                .then((result) => {
+                    if (result.ok && result.data) {
+                        setRows(
+                            result.data.zones.map((z) =>
+                                toZoneRow(z, paramMetric as Metric),
+                            ),
+                        );
+                    } else {
+                        setSubmitError('Failed to load zone set');
+                    }
+                    setLoading(false);
+                });
+        } else {
+            trainingZoneService.listActive().then((result) => {
+                if (result.ok) {
+                    setConfiguredCombinations(
+                        new Set(result.data.map((z) => `${z.discipline}/${z.metric}`)),
                     );
-                } else {
-                    setSubmitError('Failed to load zone set');
                 }
                 setLoading(false);
             });
+        }
     }, [isEditing, paramDiscipline, paramMetric]);
 
-    const availableMetrics: Metric[] =
-        discipline ? VALID_METRICS[discipline as Discipline] : [];
+    const availableDisciplines = isEditing
+        ? ALL_DISCIPLINE_OPTIONS
+        : ALL_DISCIPLINE_OPTIONS.filter((opt) =>
+              VALID_ZONE_COMBINATIONS[opt.value].some(
+                  (m) => !configuredCombinations.has(`${opt.value}/${m}`),
+              ),
+          );
+
+    const availableMetrics: Metric[] = discipline
+        ? VALID_ZONE_COMBINATIONS[discipline as Discipline].filter(
+              (m) => !configuredCombinations.has(`${discipline}/${m}`),
+          )
+        : [];
 
     function handleDisciplineChange(d: Discipline) {
         setDiscipline(d);
         setDisciplineError('');
-        // Reset metric if not valid for the new discipline
-        const validMetrics = VALID_METRICS[d];
+        const validMetrics = VALID_ZONE_COMBINATIONS[d];
         if (metric && !validMetrics.includes(metric as Metric)) {
             setMetric('');
         }
@@ -128,12 +128,11 @@ export function TrainingZoneEditorPage() {
         setRows((prev) =>
             prev.map((row) => {
                 if (!row.min && !row.max) return row;
-                // If switching to/from pace, reformat displayed values
                 const prevMetric = metric as Metric;
                 const prevMin = parseZoneValue(row.min, prevMetric);
                 const prevMax = parseZoneValue(row.max, prevMetric);
-                const fmtMin = m === 'pace' ? formatPace(isNaN(prevMin) ? 0 : prevMin) : isNaN(prevMin) ? '' : String(prevMin);
-                const fmtMax = m === 'pace' ? formatPace(isNaN(prevMax) ? 0 : prevMax) : isNaN(prevMax) ? '' : String(prevMax);
+                const fmtMin = m === 'pace' ? formatSecondsToMmSs(isNaN(prevMin) ? 0 : prevMin) : isNaN(prevMin) ? '' : String(prevMin);
+                const fmtMax = m === 'pace' ? formatSecondsToMmSs(isNaN(prevMax) ? 0 : prevMax) : isNaN(prevMax) ? '' : String(prevMax);
                 return { ...row, min: fmtMin, max: fmtMax };
             }),
         );
@@ -236,7 +235,7 @@ export function TrainingZoneEditorPage() {
                 {/* Discipline selector — locked when editing */}
                 <FormField label="Discipline" error={disciplineError}>
                     <div className="flex gap-2">
-                        {DISCIPLINE_OPTIONS.map((opt) => (
+                        {availableDisciplines.map((opt) => (
                             <button
                                 key={opt.value}
                                 type="button"
@@ -299,6 +298,7 @@ export function TrainingZoneEditorPage() {
                                     row={row}
                                     errors={zoneRowErrors[i]}
                                     placeholder={inputPlaceholder}
+                                    isPace={currentMetric === 'pace'}
                                     canRemove={rows.length > 1}
                                     onChange={(field, value) => updateRow(i, field, value)}
                                     onRemove={() => removeRow(i)}
@@ -331,6 +331,7 @@ function ZoneRowEditor({
     row,
     errors,
     placeholder,
+    isPace,
     canRemove,
     onChange,
     onRemove,
@@ -339,6 +340,7 @@ function ZoneRowEditor({
     row: ZoneRow;
     errors?: ZoneRowErrors;
     placeholder: string;
+    isPace: boolean;
     canRemove: boolean;
     onChange: (field: keyof ZoneRow, value: string) => void;
     onRemove: () => void;
@@ -369,18 +371,34 @@ function ZoneRowEditor({
                 </FormField>
                 <div className="flex gap-2">
                     <FormField label="Min" error={errors?.min}>
-                        <Input
-                            value={row.min}
-                            placeholder={placeholder}
-                            onChange={(e) => onChange('min', e.target.value)}
-                        />
+                        {isPace ? (
+                            <PaceInput
+                                value={row.min}
+                                placeholder={placeholder}
+                                onChange={(val) => onChange('min', val)}
+                            />
+                        ) : (
+                            <Input
+                                value={row.min}
+                                placeholder={placeholder}
+                                onChange={(e) => onChange('min', e.target.value)}
+                            />
+                        )}
                     </FormField>
                     <FormField label="Max" error={errors?.max}>
-                        <Input
-                            value={row.max}
-                            placeholder={placeholder}
-                            onChange={(e) => onChange('max', e.target.value)}
-                        />
+                        {isPace ? (
+                            <PaceInput
+                                value={row.max}
+                                placeholder={placeholder}
+                                onChange={(val) => onChange('max', val)}
+                            />
+                        ) : (
+                            <Input
+                                value={row.max}
+                                placeholder={placeholder}
+                                onChange={(e) => onChange('max', e.target.value)}
+                            />
+                        )}
                     </FormField>
                 </div>
             </div>
