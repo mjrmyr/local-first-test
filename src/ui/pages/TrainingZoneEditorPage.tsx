@@ -216,7 +216,7 @@ export function TrainingZoneEditorPage() {
 
     const currentMetric = metric as Metric;
     const inputPlaceholder = currentMetric === 'pace' ? 'e.g. 5:30' : 'e.g. 100';
-    const inputHint = currentMetric === 'pace' ? 'mm:ss per km' : '';
+    const inputHint = currentMetric === 'pace' ? 'mm:ss per km — Min = slow end, Max = fast end' : '';
 
     return (
         <div className="flex min-h-screen flex-col bg-[#fff4e1]">
