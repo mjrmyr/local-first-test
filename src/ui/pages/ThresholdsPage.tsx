@@ -3,7 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { thresholdService } from '../../application/thresholdService';
 import { VALID_THRESHOLD_COMBINATIONS, type Threshold } from '../../domain/models/threshold';
 import type { Discipline } from '../../domain/types';
+import type { Metric } from '../../domain/types';
 import { Button } from '../components/Button';
+import { ThresholdEditorPage } from './ThresholdEditorPage';
 
 const TOTAL_POSSIBLE_THRESHOLDS = Object.values(VALID_THRESHOLD_COMBINATIONS).reduce(
     (sum, metrics) => sum + metrics.length,
@@ -41,12 +43,17 @@ function formatValue(value: number, metric: string): string {
     return String(value);
 }
 
+type EditorState =
+    | { mode: 'new' }
+    | { mode: 'edit'; discipline: Discipline; metric: Metric };
+
 export function ThresholdsPage() {
     const navigate = useNavigate();
     const [thresholds, setThresholds] = useState<Threshold[]>([]);
     const [loading, setLoading] = useState(true);
     const [loadError, setLoadError] = useState('');
     const [deleteError, setDeleteError] = useState('');
+    const [editorState, setEditorState] = useState<EditorState | null>(null);
 
     useEffect(() => {
         load();
@@ -71,6 +78,19 @@ export function ThresholdsPage() {
         } else {
             setDeleteError(result.error);
         }
+    }
+
+    if (editorState !== null) {
+        const isEditing = editorState.mode === 'edit';
+        return (
+            <ThresholdEditorPage
+                isEditing={isEditing}
+                discipline={isEditing ? editorState.discipline : undefined}
+                metric={isEditing ? editorState.metric : undefined}
+                onBack={() => setEditorState(null)}
+                onSave={() => { setEditorState(null); load(); }}
+            />
+        );
     }
 
     const grouped = DISCIPLINE_ORDER.reduce<Record<Discipline, Threshold[]>>(
@@ -121,9 +141,11 @@ export function ThresholdsPage() {
                                         key={threshold.id}
                                         threshold={threshold}
                                         onEdit={() =>
-                                            navigate(
-                                                `/thresholds/${threshold.discipline}/${threshold.metric}/edit`,
-                                            )
+                                            setEditorState({
+                                                mode: 'edit',
+                                                discipline: threshold.discipline,
+                                                metric: threshold.metric,
+                                            })
                                         }
                                         onDelete={() => handleDelete(threshold)}
                                     />
@@ -134,7 +156,7 @@ export function ThresholdsPage() {
                 })}
 
                 {thresholds.length < TOTAL_POSSIBLE_THRESHOLDS && (
-                    <Button onClick={() => navigate('/thresholds/new')}>+ Add Threshold</Button>
+                    <Button onClick={() => setEditorState({ mode: 'new' })}>+ Add Threshold</Button>
                 )}
             </main>
         </div>

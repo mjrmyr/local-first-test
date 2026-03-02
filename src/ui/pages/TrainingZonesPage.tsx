@@ -3,7 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { trainingZoneService } from '../../application/trainingZoneService';
 import { VALID_ZONE_COMBINATIONS, type TrainingZones } from '../../domain/models/trainingZone';
 import type { Discipline } from '../../domain/types';
+import type { Metric } from '../../domain/types';
 import { Button } from '../components/Button';
+import { TrainingZoneEditorPage } from './TrainingZoneEditorPage';
 
 const TOTAL_POSSIBLE_ZONE_SETS = Object.values(VALID_ZONE_COMBINATIONS).reduce(
     (sum, metrics) => sum + metrics.length,
@@ -35,12 +37,17 @@ function formatZoneValue(value: number, metric: string): string {
     return String(value);
 }
 
+type EditorState =
+    | { mode: 'new' }
+    | { mode: 'edit'; discipline: Discipline; metric: Metric };
+
 export function TrainingZonesPage() {
     const navigate = useNavigate();
     const [zoneSets, setZoneSets] = useState<TrainingZones[]>([]);
     const [loading, setLoading] = useState(true);
     const [loadError, setLoadError] = useState('');
     const [deleteError, setDeleteError] = useState('');
+    const [editorState, setEditorState] = useState<EditorState | null>(null);
 
     useEffect(() => {
         load();
@@ -65,6 +72,19 @@ export function TrainingZonesPage() {
         } else {
             setDeleteError(result.error);
         }
+    }
+
+    if (editorState !== null) {
+        const isEditing = editorState.mode === 'edit';
+        return (
+            <TrainingZoneEditorPage
+                isEditing={isEditing}
+                discipline={isEditing ? editorState.discipline : undefined}
+                metric={isEditing ? editorState.metric : undefined}
+                onBack={() => setEditorState(null)}
+                onSave={() => { setEditorState(null); load(); }}
+            />
+        );
     }
 
     const grouped = DISCIPLINE_ORDER.reduce<Record<Discipline, TrainingZones[]>>(
@@ -115,9 +135,11 @@ export function TrainingZonesPage() {
                                         key={zoneSet.id}
                                         zoneSet={zoneSet}
                                         onEdit={() =>
-                                            navigate(
-                                                `/training-zones/${zoneSet.discipline}/${zoneSet.metric}/edit`,
-                                            )
+                                            setEditorState({
+                                                mode: 'edit',
+                                                discipline: zoneSet.discipline,
+                                                metric: zoneSet.metric,
+                                            })
                                         }
                                         onDelete={() => handleDelete(zoneSet)}
                                     />
@@ -128,7 +150,7 @@ export function TrainingZonesPage() {
                 })}
 
                 {zoneSets.length < TOTAL_POSSIBLE_ZONE_SETS && (
-                    <Button onClick={() => navigate('/training-zones/new')}>
+                    <Button onClick={() => setEditorState({ mode: 'new' })}>
                         + Add Zone Set
                     </Button>
                 )}

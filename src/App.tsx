@@ -8,9 +8,7 @@ import { HomePage } from './ui/pages/HomePage';
 import { OnboardingPage } from './ui/pages/OnboardingPage';
 import { ProfilePage } from './ui/pages/ProfilePage';
 import { SettingsPage } from './ui/pages/SettingsPage';
-import { ThresholdEditorPage } from './ui/pages/ThresholdEditorPage';
 import { ThresholdsPage } from './ui/pages/ThresholdsPage';
-import { TrainingZoneEditorPage } from './ui/pages/TrainingZoneEditorPage';
 import { TrainingZonesPage } from './ui/pages/TrainingZonesPage';
 
 type AppStatus = 'loading' | 'onboarding' | 'ready';
@@ -67,17 +65,7 @@ function App() {
                 <Route path="/settings" element={<SettingsPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/training-zones" element={<TrainingZonesPage />} />
-                <Route path="/training-zones/new" element={<TrainingZoneEditorPage />} />
-                <Route
-                    path="/training-zones/:discipline/:metric/edit"
-                    element={<TrainingZoneEditorPage />}
-                />
                 <Route path="/thresholds" element={<ThresholdsPage />} />
-                <Route path="/thresholds/new" element={<ThresholdEditorPage />} />
-                <Route
-                    path="/thresholds/:discipline/:metric/edit"
-                    element={<ThresholdEditorPage />}
-                />
             </Route>
         </Routes>
     );

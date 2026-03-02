@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
 import { thresholdService } from '../../application/thresholdService';
 import { VALID_THRESHOLD_COMBINATIONS } from '../../domain/models/threshold';
 import type { Discipline, Metric } from '../../domain/types';
@@ -32,15 +31,15 @@ function formatValue(value: number, metric: Metric): string {
     return String(value);
 }
 
-export function ThresholdEditorPage() {
-    const navigate = useNavigate();
-    const { discipline: paramDiscipline, metric: paramMetric } = useParams<{
-        discipline: Discipline;
-        metric: Metric;
-    }>();
+interface Props {
+    isEditing: boolean;
+    discipline?: Discipline;
+    metric?: Metric;
+    onBack: () => void;
+    onSave: () => void;
+}
 
-    const isEditing = paramDiscipline !== undefined && paramMetric !== undefined;
-
+export function ThresholdEditorPage({ isEditing, discipline: paramDiscipline, metric: paramMetric, onBack, onSave }: Props) {
     const [discipline, setDiscipline] = useState<Discipline | ''>(paramDiscipline ?? '');
     const [metric, setMetric] = useState<Metric | ''>(paramMetric ?? '');
     const [rawValue, setRawValue] = useState('');
@@ -147,7 +146,7 @@ export function ThresholdEditorPage() {
         setSubmitting(false);
 
         if (result.ok) {
-            navigate('/thresholds');
+            onSave();
         } else {
             setSubmitError(result.error);
         }
@@ -169,7 +168,7 @@ export function ThresholdEditorPage() {
         <div className="flex min-h-screen flex-col bg-[#fff4e1]">
             <header className="flex items-center gap-3 px-6 py-4 border-b border-orange-100">
                 <button
-                    onClick={() => navigate('/thresholds')}
+                    onClick={onBack}
                     className="text-sm font-medium text-gray-500 hover:text-gray-700"
                 >
                     ← Back
