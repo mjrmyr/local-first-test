@@ -119,7 +119,7 @@ export function ProfilePage() {
         <div className="flex min-h-screen flex-col bg-[#fff4e1]">
             <header className="flex items-center gap-3 px-6 py-4 border-b border-orange-100">
                 <button
-                    onClick={() => navigate('/')}
+                    onClick={() => navigate(-1)}
                     className="text-sm font-medium text-gray-500 hover:text-gray-700"
                 >
                     ← Back
