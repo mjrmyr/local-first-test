@@ -95,16 +95,16 @@ export function ProfilePage() {
 
     if (loading) {
         return (
-            <div className="flex min-h-screen items-center justify-center bg-[#fff4e1]">
-                <span className="text-gray-400">Loading…</span>
+            <div className="flex min-h-screen items-center justify-center bg-canvas">
+                <span className="text-muted">Loading…</span>
             </div>
         );
     }
 
     if (loadError || !athlete) {
         return (
-            <div className="flex min-h-screen items-center justify-center bg-[#fff4e1]">
-                <p className="text-red-600">{loadError || 'Profile not found'}</p>
+            <div className="flex min-h-screen items-center justify-center bg-canvas">
+                <p className="text-error">{loadError || 'Profile not found'}</p>
             </div>
         );
     }
@@ -116,15 +116,15 @@ export function ProfilePage() {
     ];
 
     return (
-        <div className="flex min-h-screen flex-col bg-[#fff4e1]">
-            <header className="flex items-center gap-3 px-6 py-4 border-b border-orange-100">
+        <div className="flex min-h-screen flex-col bg-canvas">
+            <header className="flex items-center gap-3 px-6 py-4 border-b border-navy/10">
                 <button
                     onClick={() => navigate(-1)}
-                    className="text-sm font-medium text-gray-500 hover:text-gray-700"
+                    className="text-sm font-medium text-muted hover:text-foreground"
                 >
                     ← Back
                 </button>
-                <h1 className="text-lg font-bold text-gray-900">Profile</h1>
+                <h1 className="text-lg font-bold text-foreground">Profile</h1>
             </header>
 
             <main className="flex flex-col gap-6 px-6 py-8 max-w-sm mx-auto w-full">
@@ -145,8 +145,8 @@ export function ProfilePage() {
                                 onClick={() => { setGender(opt.value); setSaved(false); }}
                                 className={`rounded-xl border-2 px-4 py-3 text-left font-medium transition-colors ${
                                     gender === opt.value
-                                        ? 'border-orange-500 bg-orange-50 text-orange-700'
-                                        : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
+                                        ? 'border-primary bg-primary/10 text-primary-dark'
+                                        : 'border-navy/10 bg-surface text-foreground hover:border-navy/15'
                                 }`}
                             >
                                 {opt.label}
@@ -186,8 +186,8 @@ export function ProfilePage() {
                     />
                 </FormField>
 
-                {submitError && <p className="text-sm text-red-600">{submitError}</p>}
-                {saved && <p className="text-sm text-green-600">Profile saved.</p>}
+                {submitError && <p className="text-sm text-error">{submitError}</p>}
+                {saved && <p className="text-sm text-success">Profile saved.</p>}
 
                 <Button onClick={handleSave} disabled={submitting}>
                     {submitting ? 'Saving…' : 'Save'}

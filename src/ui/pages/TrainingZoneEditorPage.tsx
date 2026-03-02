@@ -206,8 +206,8 @@ export function TrainingZoneEditorPage({ isEditing, discipline: paramDiscipline,
 
     if (loading) {
         return (
-            <div className="flex min-h-screen items-center justify-center bg-[#fff4e1]">
-                <span className="text-gray-400">Loading…</span>
+            <div className="flex min-h-screen items-center justify-center bg-canvas">
+                <span className="text-muted">Loading…</span>
             </div>
         );
     }
@@ -217,15 +217,15 @@ export function TrainingZoneEditorPage({ isEditing, discipline: paramDiscipline,
     const inputHint = currentMetric === 'pace' ? 'mm:ss per km — Min = slow end, Max = fast end' : '';
 
     return (
-        <div className="flex min-h-screen flex-col bg-[#fff4e1]">
-            <header className="flex items-center gap-3 px-6 py-4 border-b border-orange-100">
+        <div className="flex min-h-screen flex-col bg-canvas">
+            <header className="flex items-center gap-3 px-6 py-4 border-b border-navy/10">
                 <button
                     onClick={onBack}
-                    className="text-sm font-medium text-gray-500 hover:text-gray-700"
+                    className="text-sm font-medium text-muted hover:text-foreground"
                 >
                     ← Back
                 </button>
-                <h1 className="text-lg font-bold text-gray-900">
+                <h1 className="text-lg font-bold text-foreground">
                     {isEditing ? 'Edit Zone Set' : 'New Zone Set'}
                 </h1>
             </header>
@@ -242,8 +242,8 @@ export function TrainingZoneEditorPage({ isEditing, discipline: paramDiscipline,
                                 onClick={() => handleDisciplineChange(opt.value)}
                                 className={`flex-1 rounded-xl border-2 px-3 py-2.5 text-sm font-medium transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${
                                     discipline === opt.value
-                                        ? 'border-orange-500 bg-orange-50 text-orange-700'
-                                        : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
+                                        ? 'border-primary bg-primary/10 text-primary-dark'
+                                        : 'border-navy/10 bg-surface text-foreground hover:border-navy/15'
                                 }`}
                             >
                                 {opt.label}
@@ -264,8 +264,8 @@ export function TrainingZoneEditorPage({ isEditing, discipline: paramDiscipline,
                                     onClick={() => handleMetricChange(m)}
                                     className={`flex-1 rounded-xl border-2 px-3 py-2.5 text-sm font-medium transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${
                                         metric === m
-                                            ? 'border-orange-500 bg-orange-50 text-orange-700'
-                                            : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
+                                            ? 'border-primary bg-primary/10 text-primary-dark'
+                                            : 'border-navy/10 bg-surface text-foreground hover:border-navy/15'
                                     }`}
                                 >
                                     {METRIC_LABELS[m]}
@@ -280,14 +280,14 @@ export function TrainingZoneEditorPage({ isEditing, discipline: paramDiscipline,
                     <>
                         <div className="flex flex-col gap-3">
                             <div className="flex items-center justify-between">
-                                <span className="text-sm font-medium text-gray-700">Zones</span>
+                                <span className="text-sm font-medium text-foreground">Zones</span>
                                 {inputHint && (
-                                    <span className="text-xs text-gray-400">{inputHint}</span>
+                                    <span className="text-xs text-muted">{inputHint}</span>
                                 )}
                             </div>
 
                             {zonesError && (
-                                <p className="text-sm text-red-600">{zonesError}</p>
+                                <p className="text-sm text-error">{zonesError}</p>
                             )}
 
                             {rows.map((row, i) => (
@@ -307,13 +307,13 @@ export function TrainingZoneEditorPage({ isEditing, discipline: paramDiscipline,
                             <button
                                 type="button"
                                 onClick={addRow}
-                                className="rounded-xl border-2 border-dashed border-gray-300 py-2.5 text-sm font-medium text-gray-500 hover:border-orange-300 hover:text-orange-600 transition-colors"
+                                className="rounded-xl border-2 border-dashed border-navy/15 py-2.5 text-sm font-medium text-muted hover:border-primary/40 hover:text-primary transition-colors"
                             >
                                 + Add Zone
                             </button>
                         </div>
 
-                        {submitError && <p className="text-sm text-red-600">{submitError}</p>}
+                        {submitError && <p className="text-sm text-error">{submitError}</p>}
 
                         <Button onClick={handleSave} disabled={submitting}>
                             {submitting ? 'Saving…' : 'Save Zone Set'}
@@ -345,16 +345,16 @@ function ZoneRowEditor({
     onRemove: () => void;
 }) {
     return (
-        <div className="rounded-xl border border-gray-200 bg-white p-3">
+        <div className="rounded-xl border border-navy/10 bg-surface p-3">
             <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">
+                <span className="text-xs font-semibold text-muted uppercase tracking-wide">
                     Zone {index + 1}
                 </span>
                 {canRemove && (
                     <button
                         type="button"
                         onClick={onRemove}
-                        className="text-xs text-gray-400 hover:text-red-500 transition-colors"
+                        className="text-xs text-muted hover:text-error transition-colors"
                     >
                         Remove
                     </button>

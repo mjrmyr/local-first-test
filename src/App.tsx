@@ -36,8 +36,8 @@ function App() {
 
     if (status === 'loading') {
         return (
-            <div className="flex min-h-screen items-center justify-center bg-[#fff4e1]">
-                <span className="text-gray-400">Loading…</span>
+            <div className="flex min-h-screen items-center justify-center bg-canvas">
+                <span className="text-muted">Loading…</span>
             </div>
         );
     }

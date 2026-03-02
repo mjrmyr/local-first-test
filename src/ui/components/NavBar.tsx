@@ -29,8 +29,8 @@ export function TopNav() {
     const activeItem = getActiveItem(location.pathname);
 
     return (
-        <nav className="hidden lg:flex shrink-0 items-center gap-1 border-b border-orange-100 bg-white px-6 h-14">
-            <span className="mr-6 text-lg font-bold text-gray-900">kaeno</span>
+        <nav className="hidden lg:flex shrink-0 items-center gap-1 border-b border-navy/10 bg-surface px-6 h-14">
+            <span className="mr-6 text-lg font-bold text-foreground">kaeno</span>
             {navItems.map((item) => {
                 const isActive = item.to === activeItem;
                 return (
@@ -39,8 +39,8 @@ export function TopNav() {
                         onClick={() => navigate(item.to)}
                         className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                             isActive
-                                ? 'bg-orange-50 text-orange-600'
-                                : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
+                                ? 'bg-primary/10 text-primary'
+                                : 'text-muted hover:bg-canvas hover:text-foreground'
                         }`}
                     >
                         {item.icon}
@@ -59,7 +59,7 @@ export function BottomNav() {
     const activeItem = getActiveItem(location.pathname);
 
     return (
-        <nav className="lg:hidden shrink-0 flex items-stretch border-t border-orange-100 bg-white h-16">
+        <nav className="lg:hidden shrink-0 flex items-stretch border-t border-navy/10 bg-surface h-16">
             {navItems.map((item) => {
                 const isActive = item.to === activeItem;
                 return (
@@ -67,7 +67,7 @@ export function BottomNav() {
                         key={item.to}
                         onClick={() => navigate(item.to)}
                         className={`flex flex-1 flex-col items-center justify-center gap-1 text-xs font-medium transition-colors ${
-                            isActive ? 'text-orange-600' : 'text-gray-400 hover:text-gray-600'
+                            isActive ? 'text-primary' : 'text-muted hover:text-foreground'
                         }`}
                     >
                         {item.icon}

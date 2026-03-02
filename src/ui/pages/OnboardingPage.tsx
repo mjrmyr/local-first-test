@@ -69,7 +69,7 @@ export function OnboardingPage({ onComplete }: OnboardingPageProps) {
     }
 
     return (
-        <div className="flex min-h-screen flex-col items-center justify-center bg-[#fff4e1] px-6 py-12">
+        <div className="flex min-h-screen flex-col items-center justify-center bg-canvas px-6 py-12">
             <div className="w-full max-w-sm">
                 {step === 'welcome' && <WelcomeStep onNext={() => setStep('name')} />}
 
@@ -111,10 +111,10 @@ function WelcomeStep({ onNext }: { onNext: () => void }) {
     return (
         <div className="flex flex-col items-center gap-8 text-center">
             <div>
-                <h1 className="text-4xl font-bold text-gray-900">kaeno</h1>
-                <p className="mt-2 text-gray-500">Your personal training companion</p>
+                <h1 className="text-4xl font-bold text-foreground">kaeno</h1>
+                <p className="mt-2 text-muted">Your personal training companion</p>
             </div>
-            <p className="text-gray-600">
+            <p className="text-muted">
                 Track your endurance training — all stored locally, completely private.
             </p>
             <Button onClick={onNext}>Get started</Button>
@@ -136,8 +136,8 @@ function NameStep({
     return (
         <div className="flex flex-col gap-8">
             <div>
-                <h2 className="text-2xl font-bold text-gray-900">What's your name?</h2>
-                <p className="mt-1 text-sm text-gray-500">Step 1 of 3</p>
+                <h2 className="text-2xl font-bold text-foreground">What's your name?</h2>
+                <p className="mt-1 text-sm text-muted">Step 1 of 3</p>
             </div>
             <FormField label="Name" error={error}>
                 <Input
@@ -175,8 +175,8 @@ function GenderStep({
     return (
         <div className="flex flex-col gap-8">
             <div>
-                <h2 className="text-2xl font-bold text-gray-900">What's your gender?</h2>
-                <p className="mt-1 text-sm text-gray-500">Step 2 of 3</p>
+                <h2 className="text-2xl font-bold text-foreground">What's your gender?</h2>
+                <p className="mt-1 text-sm text-muted">Step 2 of 3</p>
             </div>
             <div className="flex flex-col gap-3">
                 {options.map((opt) => (
@@ -185,14 +185,14 @@ function GenderStep({
                         onClick={() => onChange(opt.value)}
                         className={`rounded-xl border-2 px-4 py-3 text-left font-medium transition-colors ${
                             value === opt.value
-                                ? 'border-orange-500 bg-orange-50 text-orange-700'
-                                : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
+                                ? 'border-primary bg-primary/10 text-primary-dark'
+                                : 'border-navy/10 bg-surface text-foreground hover:border-navy/15'
                         }`}
                     >
                         {opt.label}
                     </button>
                 ))}
-                {error && <p className="text-sm text-red-600">{error}</p>}
+                {error && <p className="text-sm text-error">{error}</p>}
             </div>
             <div className="flex flex-col gap-2">
                 <Button onClick={onNext}>Continue</Button>
@@ -222,8 +222,8 @@ function BirthdayStep({
     return (
         <div className="flex flex-col gap-8">
             <div>
-                <h2 className="text-2xl font-bold text-gray-900">When were you born?</h2>
-                <p className="mt-1 text-sm text-gray-500">Step 3 of 3</p>
+                <h2 className="text-2xl font-bold text-foreground">When were you born?</h2>
+                <p className="mt-1 text-sm text-muted">Step 3 of 3</p>
             </div>
             <FormField label="Birthday" error={error}>
                 <Input

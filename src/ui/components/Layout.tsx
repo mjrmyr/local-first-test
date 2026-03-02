@@ -12,7 +12,7 @@ interface LayoutProps {
  */
 export function Layout({ children }: LayoutProps) {
     return (
-        <div className="flex flex-col h-dvh bg-[#fff4e1]">
+        <div className="flex flex-col h-dvh bg-canvas">
             <TopNav />
             <div className="flex-1 overflow-y-auto">{children}</div>
             <BottomNav />
