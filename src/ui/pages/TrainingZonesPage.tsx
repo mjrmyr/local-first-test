@@ -1,9 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { trainingZoneService } from '../../application/trainingZoneService';
-import type { TrainingZones } from '../../domain/models/trainingZone';
+import { VALID_ZONE_COMBINATIONS, type TrainingZones } from '../../domain/models/trainingZone';
 import type { Discipline } from '../../domain/types';
 import { Button } from '../components/Button';
+
+const TOTAL_POSSIBLE_ZONE_SETS = Object.values(VALID_ZONE_COMBINATIONS).reduce(
+    (sum, metrics) => sum + metrics.length,
+    0,
+);
 
 const DISCIPLINE_LABELS: Record<Discipline, string> = {
     swim: 'Swimming',
@@ -122,9 +127,11 @@ export function TrainingZonesPage() {
                     );
                 })}
 
-                <Button onClick={() => navigate('/training-zones/new')}>
-                    + Add Zone Set
-                </Button>
+                {zoneSets.length < TOTAL_POSSIBLE_ZONE_SETS && (
+                    <Button onClick={() => navigate('/training-zones/new')}>
+                        + Add Zone Set
+                    </Button>
+                )}
             </main>
         </div>
     );
