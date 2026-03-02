@@ -59,7 +59,7 @@ export function BottomNav() {
     const activeItem = getActiveItem(location.pathname);
 
     return (
-        <nav className="lg:hidden shrink-0 flex items-stretch border-t border-navy/10 bg-surface h-16">
+        <nav className="lg:hidden shrink-0 flex items-stretch border-t border-navy/10 bg-surface h-20 pb-6">
             {navItems.map((item) => {
                 const isActive = item.to === activeItem;
                 return (
