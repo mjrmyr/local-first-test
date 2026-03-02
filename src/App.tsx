@@ -66,6 +66,7 @@ function App() {
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/training-zones" element={<TrainingZonesPage />} />
                 <Route path="/thresholds" element={<ThresholdsPage />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
             </Route>
         </Routes>
     );
