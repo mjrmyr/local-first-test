@@ -23,7 +23,7 @@ See [entities.md](../entities.md) for `EntityMetadata` and `SoftDeletable`. See 
 2. `name` is required and must be non-empty.
 3. `weight` and `height` are optional but must be positive numbers when provided.
 4. The Athlete is created during onboarding and the active record is never hard-deleted.
-5. Updating `weight` uses the **tombstone pattern**: a new Athlete record is inserted with the updated values and `deleted = 0`; the previous record is soft-deleted (`deleted = 1`). This allows querying the full history of weight changes over time.
+5. Updating `weight` uses the **tombstone pattern**: when `weight` changes, a new Athlete record is inserted with the updated values and `deleted = 0`, and the previous record is soft-deleted (`deleted = 1`). This preserves exact data points of weight changes over time for future visualisation. Changes to other fields (name, gender, birthday, height) update the existing record in-place and do **not** create a new tombstone record.
 
 ## Operations
 
