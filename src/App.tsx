@@ -1,15 +1,26 @@
 import { useEffect, useState } from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Navigate, Outlet, Route, Routes } from 'react-router-dom';
 import { athleteService } from './application/athleteService';
+import { Layout } from './ui/components/Layout';
+import { AnalyticsPage } from './ui/pages/AnalyticsPage';
+import { CalendarPage } from './ui/pages/CalendarPage';
 import { HomePage } from './ui/pages/HomePage';
 import { OnboardingPage } from './ui/pages/OnboardingPage';
 import { ProfilePage } from './ui/pages/ProfilePage';
-import { TrainingZonesPage } from './ui/pages/TrainingZonesPage';
-import { TrainingZoneEditorPage } from './ui/pages/TrainingZoneEditorPage';
-import { ThresholdsPage } from './ui/pages/ThresholdsPage';
 import { ThresholdEditorPage } from './ui/pages/ThresholdEditorPage';
+import { ThresholdsPage } from './ui/pages/ThresholdsPage';
+import { TrainingZoneEditorPage } from './ui/pages/TrainingZoneEditorPage';
+import { TrainingZonesPage } from './ui/pages/TrainingZonesPage';
 
 type AppStatus = 'loading' | 'onboarding' | 'ready';
+
+function ReadyLayout() {
+    return (
+        <Layout>
+            <Outlet />
+        </Layout>
+    );
+}
 
 function App() {
     const [status, setStatus] = useState<AppStatus>('loading');
@@ -45,53 +56,27 @@ function App() {
                 }
             />
             <Route
-                path="/"
                 element={
-                    status === 'ready' ? <HomePage /> : <Navigate to="/onboarding" replace />
+                    status === 'ready' ? <ReadyLayout /> : <Navigate to="/onboarding" replace />
                 }
-            />
-            <Route
-                path="/profile"
-                element={
-                    status === 'ready' ? <ProfilePage /> : <Navigate to="/onboarding" replace />
-                }
-            />
-            <Route
-                path="/training-zones"
-                element={
-                    status === 'ready' ? <TrainingZonesPage /> : <Navigate to="/onboarding" replace />
-                }
-            />
-            <Route
-                path="/training-zones/new"
-                element={
-                    status === 'ready' ? <TrainingZoneEditorPage /> : <Navigate to="/onboarding" replace />
-                }
-            />
-            <Route
-                path="/training-zones/:discipline/:metric/edit"
-                element={
-                    status === 'ready' ? <TrainingZoneEditorPage /> : <Navigate to="/onboarding" replace />
-                }
-            />
-            <Route
-                path="/thresholds"
-                element={
-                    status === 'ready' ? <ThresholdsPage /> : <Navigate to="/onboarding" replace />
-                }
-            />
-            <Route
-                path="/thresholds/new"
-                element={
-                    status === 'ready' ? <ThresholdEditorPage /> : <Navigate to="/onboarding" replace />
-                }
-            />
-            <Route
-                path="/thresholds/:discipline/:metric/edit"
-                element={
-                    status === 'ready' ? <ThresholdEditorPage /> : <Navigate to="/onboarding" replace />
-                }
-            />
+            >
+                <Route path="/" element={<HomePage />} />
+                <Route path="/calendar" element={<CalendarPage />} />
+                <Route path="/analytics" element={<AnalyticsPage />} />
+                <Route path="/profile" element={<ProfilePage />} />
+                <Route path="/training-zones" element={<TrainingZonesPage />} />
+                <Route path="/training-zones/new" element={<TrainingZoneEditorPage />} />
+                <Route
+                    path="/training-zones/:discipline/:metric/edit"
+                    element={<TrainingZoneEditorPage />}
+                />
+                <Route path="/thresholds" element={<ThresholdsPage />} />
+                <Route path="/thresholds/new" element={<ThresholdEditorPage />} />
+                <Route
+                    path="/thresholds/:discipline/:metric/edit"
+                    element={<ThresholdEditorPage />}
+                />
+            </Route>
         </Routes>
     );
 }
