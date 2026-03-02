@@ -17,17 +17,17 @@ export interface TrainingZonesErrors {
 // For pace, higher numeric value = slower pace (more seconds/km).
 // min represents the slow end (high seconds), max the fast end (low seconds),
 // so the valid relationship is min > max — the opposite of HR and power.
-function validateMinMax(min: number, max: number, metric: Metric): string | undefined {
+function validateMinMax(min: number, max: number, metric: Metric): { valid: boolean; error?: string } {
     if (metric === 'pace') {
         if (min <= max) {
-            return 'For pace, min (slow end) must be greater than max (fast end)';
+            return { valid: false, error: 'For pace, min (slow end) must be greater than max (fast end)' };
         }
     } else {
         if (min >= max) {
-            return 'Min must be less than max';
+            return { valid: false, error: 'Min must be less than max' };
         }
     }
-    return undefined;
+    return { valid: true };
 }
 
 // Check that zone i starts where zone i-1 ends (no gap, no overlap).
@@ -68,9 +68,9 @@ export function validateTrainingZones(input: CreateTrainingZonesDTO): TrainingZo
         } else if (zone.max === undefined || zone.max === null || isNaN(zone.max)) {
             rowErrors.max = 'Max is required';
         } else {
-            const minMaxError = validateMinMax(zone.min, zone.max, metric);
-            if (minMaxError) {
-                rowErrors.min = minMaxError;
+            const minMaxResult = validateMinMax(zone.min, zone.max, metric);
+            if (!minMaxResult.valid) {
+                rowErrors.min = minMaxResult.error;
             }
         }
         return rowErrors;
