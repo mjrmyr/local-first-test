@@ -154,8 +154,8 @@ export function ThresholdEditorPage({ isEditing, discipline: paramDiscipline, me
 
     if (loading) {
         return (
-            <div className="flex min-h-screen items-center justify-center bg-[#fff4e1]">
-                <span className="text-gray-400">Loading…</span>
+            <div className="flex min-h-screen items-center justify-center bg-canvas">
+                <span className="text-muted">Loading…</span>
             </div>
         );
     }
@@ -165,15 +165,15 @@ export function ThresholdEditorPage({ isEditing, discipline: paramDiscipline, me
     const valueHint = currentMetric === 'pace' ? 'Enter as mm:ss per km' : '';
 
     return (
-        <div className="flex min-h-screen flex-col bg-[#fff4e1]">
-            <header className="flex items-center gap-3 px-6 py-4 border-b border-orange-100">
+        <div className="flex min-h-screen flex-col bg-canvas">
+            <header className="flex items-center gap-3 px-6 py-4 border-b border-navy/10">
                 <button
                     onClick={onBack}
-                    className="text-sm font-medium text-gray-500 hover:text-gray-700"
+                    className="text-sm font-medium text-muted hover:text-foreground"
                 >
                     ← Back
                 </button>
-                <h1 className="text-lg font-bold text-gray-900">
+                <h1 className="text-lg font-bold text-foreground">
                     {isEditing ? 'Edit Threshold' : 'New Threshold'}
                 </h1>
             </header>
@@ -190,8 +190,8 @@ export function ThresholdEditorPage({ isEditing, discipline: paramDiscipline, me
                                 onClick={() => handleDisciplineChange(opt.value)}
                                 className={`flex-1 rounded-xl border-2 px-3 py-2.5 text-sm font-medium transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${
                                     discipline === opt.value
-                                        ? 'border-orange-500 bg-orange-50 text-orange-700'
-                                        : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
+                                        ? 'border-primary bg-primary/10 text-primary-dark'
+                                        : 'border-navy/10 bg-surface text-foreground hover:border-navy/15'
                                 }`}
                             >
                                 {opt.label}
@@ -212,8 +212,8 @@ export function ThresholdEditorPage({ isEditing, discipline: paramDiscipline, me
                                     onClick={() => handleMetricChange(m)}
                                     className={`flex-1 rounded-xl border-2 px-3 py-2.5 text-sm font-medium transition-colors disabled:opacity-60 disabled:cursor-not-allowed ${
                                         metric === m
-                                            ? 'border-orange-500 bg-orange-50 text-orange-700'
-                                            : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
+                                            ? 'border-primary bg-primary/10 text-primary-dark'
+                                            : 'border-navy/10 bg-surface text-foreground hover:border-navy/15'
                                     }`}
                                 >
                                     {METRIC_LABELS[m]}
@@ -249,11 +249,11 @@ export function ThresholdEditorPage({ isEditing, discipline: paramDiscipline, me
                                 />
                             )}
                             {valueHint && (
-                                <p className="text-xs text-gray-400 mt-0.5">{valueHint}</p>
+                                <p className="text-xs text-muted mt-0.5">{valueHint}</p>
                             )}
                         </FormField>
 
-                        {submitError && <p className="text-sm text-red-600">{submitError}</p>}
+                        {submitError && <p className="text-sm text-error">{submitError}</p>}
 
                         <Button onClick={handleSave} disabled={submitting}>
                             {submitting ? 'Saving…' : 'Save Threshold'}

@@ -97,38 +97,38 @@ export function TrainingZonesPage() {
 
     if (loading) {
         return (
-            <div className="flex min-h-screen items-center justify-center bg-[#fff4e1]">
-                <span className="text-gray-400">Loading…</span>
+            <div className="flex min-h-screen items-center justify-center bg-canvas">
+                <span className="text-muted">Loading…</span>
             </div>
         );
     }
 
     return (
-        <div className="flex min-h-screen flex-col bg-[#fff4e1]">
-            <header className="flex items-center gap-3 px-6 py-4 border-b border-orange-100">
+        <div className="flex min-h-screen flex-col bg-canvas">
+            <header className="flex items-center gap-3 px-6 py-4 border-b border-navy/10">
                 <button
                     onClick={() => navigate(-1)}
-                    className="text-sm font-medium text-gray-500 hover:text-gray-700"
+                    className="text-sm font-medium text-muted hover:text-foreground"
                 >
                     ← Back
                 </button>
-                <h1 className="text-lg font-bold text-gray-900">Training Zones</h1>
+                <h1 className="text-lg font-bold text-foreground">Training Zones</h1>
             </header>
 
             <main className="flex flex-col gap-6 px-6 py-8 max-w-lg mx-auto w-full">
-                {loadError && <p className="text-sm text-red-600">{loadError}</p>}
-                {deleteError && <p className="text-sm text-red-600">{deleteError}</p>}
+                {loadError && <p className="text-sm text-error">{loadError}</p>}
+                {deleteError && <p className="text-sm text-error">{deleteError}</p>}
 
                 {DISCIPLINE_ORDER.map((discipline) => {
                     const sets = grouped[discipline];
                     return (
                         <section key={discipline}>
-                            <h2 className="text-base font-semibold text-gray-700 mb-3">
+                            <h2 className="text-base font-semibold text-foreground mb-3">
                                 {DISCIPLINE_LABELS[discipline]}
                             </h2>
                             <div className="flex flex-col gap-3">
                                 {sets.length === 0 && (
-                                    <p className="text-sm text-gray-400 italic">No zones configured</p>
+                                    <p className="text-sm text-muted italic">No zones configured</p>
                                 )}
                                 {sets.map((zoneSet) => (
                                     <ZoneSetCard
@@ -171,15 +171,15 @@ function ZoneSetCard({
     const [confirmDelete, setConfirmDelete] = useState(false);
 
     return (
-        <div className="rounded-xl border border-gray-200 bg-white p-4">
+        <div className="rounded-xl border border-navy/10 bg-surface p-4">
             <div className="flex items-center justify-between mb-3">
-                <span className="font-medium text-gray-800">
+                <span className="font-medium text-foreground">
                     {METRIC_LABELS[zoneSet.metric] ?? zoneSet.metric}
                 </span>
                 <div className="flex gap-2">
                     <button
                         onClick={onEdit}
-                        className="text-sm font-medium text-orange-600 hover:text-orange-700"
+                        className="text-sm font-medium text-primary hover:text-primary-dark"
                     >
                         Edit
                     </button>
@@ -187,13 +187,13 @@ function ZoneSetCard({
                         <span className="flex gap-2">
                             <button
                                 onClick={() => { setConfirmDelete(false); onDelete(); }}
-                                className="text-sm font-medium text-red-600 hover:text-red-700"
+                                className="text-sm font-medium text-error hover:text-error"
                             >
                                 Confirm
                             </button>
                             <button
                                 onClick={() => setConfirmDelete(false)}
-                                className="text-sm font-medium text-gray-500 hover:text-gray-700"
+                                className="text-sm font-medium text-muted hover:text-foreground"
                             >
                                 Cancel
                             </button>
@@ -201,7 +201,7 @@ function ZoneSetCard({
                     ) : (
                         <button
                             onClick={() => setConfirmDelete(true)}
-                            className="text-sm font-medium text-gray-400 hover:text-red-500"
+                            className="text-sm font-medium text-muted hover:text-error"
                         >
                             Delete
                         </button>
@@ -211,8 +211,8 @@ function ZoneSetCard({
             <div className="flex flex-col gap-1">
                 {zoneSet.zones.map((zone, i) => (
                     <div key={i} className="flex items-center justify-between text-sm">
-                        <span className="text-gray-700">{zone.name}</span>
-                        <span className="text-gray-500 font-mono">
+                        <span className="text-foreground">{zone.name}</span>
+                        <span className="text-muted font-mono">
                             {formatZoneValue(zone.min, zoneSet.metric)}
                             {' – '}
                             {formatZoneValue(zone.max, zoneSet.metric)}
