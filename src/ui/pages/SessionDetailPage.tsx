@@ -58,7 +58,7 @@ export function SessionDetailPage({
 
     if (error || !session) {
         return (
-            <div className="flex min-h-screen flex-col bg-canvas">
+            <div className="flex flex-1 flex-col bg-canvas overflow-hidden">
                 <header className="flex items-center gap-3 px-6 py-4 border-b border-navy/10">
                     <button
                         onClick={onBack}
@@ -82,7 +82,7 @@ export function SessionDetailPage({
     });
 
     return (
-        <div className="flex min-h-screen flex-col bg-canvas">
+        <div className="flex flex-1 flex-col bg-canvas overflow-hidden">
             <header className="flex items-center gap-3 px-6 py-4 border-b border-navy/10">
                 <button
                     onClick={onBack}
@@ -93,7 +93,7 @@ export function SessionDetailPage({
                 <h1 className="text-lg font-bold text-foreground">{session.name}</h1>
             </header>
 
-            <main className="flex flex-col gap-6 px-6 py-8 max-w-lg mx-auto w-full">
+            <main className="flex flex-col gap-6 px-6 py-8 max-w-lg mx-auto w-full flex-1 overflow-y-auto">
                 <div className="flex flex-wrap gap-3">
                     <span className="text-xs text-muted rounded-lg bg-surface border border-navy/10 px-2 py-1">
                         {DISCIPLINE_LABELS[session.discipline]}

@@ -73,6 +73,19 @@ export function CalendarPage() {
         load();
     }
 
+    const scrollToTodayRef = useRef<(() => void) | null>(null);
+
+    useEffect(() => {
+        function handleTapActive(e: Event) {
+            if ((e as CustomEvent).detail === '/calendar') {
+                setViewState(null);
+                scrollToTodayRef.current?.();
+            }
+        }
+        window.addEventListener('nav:tap-active', handleTapActive);
+        return () => window.removeEventListener('nav:tap-active', handleTapActive);
+    }, []);
+
     const viewingSession = viewState?.mode === 'view' ? viewState : null;
     const editingSession = viewState?.mode === 'edit' || viewState?.mode === 'new' ? viewState : null;
 
@@ -112,6 +125,7 @@ export function CalendarPage() {
                                 sessions={sessions}
                                 onSelect={(id) => setViewState({ mode: 'view', id })}
                                 onAddOnDate={(date) => setViewState({ mode: 'new', date })}
+                                scrollToTodayRef={scrollToTodayRef}
                             />
                         </div>
                     </>
@@ -134,6 +148,7 @@ export function CalendarPage() {
                                 sessions={sessions}
                                 onSelect={(id) => setViewState({ mode: 'view', id })}
                                 onAddOnDate={(date) => setViewState({ mode: 'new', date })}
+                                scrollToTodayRef={scrollToTodayRef}
                             />
                         )}
                         {desktopView === 'week' && (
@@ -304,10 +319,12 @@ function ListView({
     sessions,
     onSelect,
     onAddOnDate,
+    scrollToTodayRef,
 }: {
     sessions: Session[];
     onSelect: (id: string) => void;
     onAddOnDate: (date: string) => void;
+    scrollToTodayRef?: React.MutableRefObject<(() => void) | null>;
 }) {
     const today = new Date();
     const todayStr = toDateString(today);
@@ -349,6 +366,15 @@ function ListView({
             hasScrolledToToday.current = true;
         }
     }, [dates]);
+
+    // Expose scroll-to-today for external triggers (e.g. nav bar tap)
+    useEffect(() => {
+        if (!scrollToTodayRef) return;
+        scrollToTodayRef.current = () => {
+            todayRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        };
+        return () => { scrollToTodayRef.current = null; };
+    }, [scrollToTodayRef]);
 
     // IntersectionObserver to load more dates at top/bottom
     useEffect(() => {
