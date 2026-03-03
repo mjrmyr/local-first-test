@@ -74,6 +74,8 @@ export function SessionEditorPage({
     const [submitError, setSubmitError] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const [loading, setLoading] = useState(isEditing);
+    const [fromWorkout, setFromWorkout] = useState(false);
+    const [stepsCollapsed, setStepsCollapsed] = useState(false);
 
     // Workout picker
     const [workouts, setWorkouts] = useState<Workout[]>([]);
@@ -110,6 +112,7 @@ export function SessionEditorPage({
         if (workout.totalDuration) setTotalDuration(String(workout.totalDuration));
         if (workout.totalDistance) setTotalDistance(String(workout.totalDistance));
         if (workout.steps?.length) setSteps(workout.steps.map((s) => ({ ...s })));
+        setFromWorkout(true);
         setShowWorkoutPicker(false);
     }
 
@@ -253,12 +256,13 @@ export function SessionEditorPage({
                             <button
                                 key={opt.value}
                                 type="button"
+                                disabled={fromWorkout}
                                 onClick={() => { setDiscipline(opt.value); setErrors((p) => ({ ...p, discipline: undefined })); }}
                                 className={`flex-1 rounded-xl border-2 px-3 py-2.5 text-sm font-medium transition-colors ${
                                     discipline === opt.value
                                         ? 'border-primary bg-primary/10 text-primary-dark'
                                         : 'border-navy/10 bg-surface text-foreground hover:border-navy/15'
-                                }`}
+                                } ${fromWorkout ? 'opacity-50 cursor-not-allowed' : ''}`}
                             >
                                 {opt.label}
                             </button>
@@ -293,31 +297,44 @@ export function SessionEditorPage({
 
                 {/* Steps */}
                 <section>
-                    <h2 className="text-base font-semibold text-foreground mb-3">Steps</h2>
-
-                    {steps.length > 0 && (
-                        <div className="flex flex-col gap-4">
-                            {steps.map((step, index) => (
-                                <SessionStepEditor
-                                    key={index}
-                                    step={step}
-                                    index={index}
-                                    total={steps.length}
-                                    onChange={(update) => updateStep(index, update)}
-                                    onRemove={() => removeStep(index)}
-                                    onMove={(dir) => moveStep(index, dir)}
-                                />
-                            ))}
-                        </div>
-                    )}
-
                     <button
                         type="button"
-                        onClick={() => setSteps((prev) => [...prev, emptyStep()])}
-                        className="mt-4 w-full text-sm font-medium text-primary hover:text-primary-dark"
+                        onClick={() => setStepsCollapsed((prev) => !prev)}
+                        className="flex w-full items-center justify-between mb-3"
                     >
-                        + Add Step
+                        <h2 className="text-base font-semibold text-foreground">
+                            Steps{steps.length > 0 && ` (${steps.length})`}
+                        </h2>
+                        <span className="text-sm text-muted">{stepsCollapsed ? '▸' : '▾'}</span>
                     </button>
+
+                    {!stepsCollapsed && (
+                        <>
+                            {steps.length > 0 && (
+                                <div className="flex flex-col gap-4">
+                                    {steps.map((step, index) => (
+                                        <SessionStepEditor
+                                            key={index}
+                                            step={step}
+                                            index={index}
+                                            total={steps.length}
+                                            onChange={(update) => updateStep(index, update)}
+                                            onRemove={() => removeStep(index)}
+                                            onMove={(dir) => moveStep(index, dir)}
+                                        />
+                                    ))}
+                                </div>
+                            )}
+
+                            <button
+                                type="button"
+                                onClick={() => setSteps((prev) => [...prev, emptyStep()])}
+                                className="mt-4 w-full text-sm font-medium text-primary hover:text-primary-dark"
+                            >
+                                + Add Step
+                            </button>
+                        </>
+                    )}
                 </section>
 
                 {submitError && <p className="text-sm text-error">{submitError}</p>}
