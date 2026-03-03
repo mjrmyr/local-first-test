@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { sessionService } from '../../application/sessionService';
 import type { Session } from '../../domain/models/session';
 import type { Discipline } from '../../domain/types';
@@ -39,11 +40,21 @@ type ViewState =
 // ─── Main CalendarPage ──────────────────────────────────────────────
 
 export function CalendarPage() {
+    const [searchParams, setSearchParams] = useSearchParams();
     const [sessions, setSessions] = useState<Session[]>([]);
     const [loading, setLoading] = useState(true);
     const [desktopView, setDesktopView] = useState<CalendarView>('month');
     const [viewState, setViewState] = useState<ViewState>(null);
     const [anchor, setAnchor] = useState(new Date());
+
+    // Open split view if ?session=<id> is present
+    useEffect(() => {
+        const sessionId = searchParams.get('session');
+        if (sessionId) {
+            setViewState({ mode: 'view', id: sessionId });
+            setSearchParams({}, { replace: true });
+        }
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     const load = useCallback(async () => {
         const result = await sessionService.listAll();
