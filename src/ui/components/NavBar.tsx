@@ -37,7 +37,13 @@ export function TopNav() {
                 return (
                     <button
                         key={item.to}
-                        onClick={() => navigate(item.to)}
+                        onClick={() => {
+                            if (item.to === activeItem) {
+                                window.dispatchEvent(new CustomEvent('nav:tap-active', { detail: item.to }));
+                            } else {
+                                navigate(item.to);
+                            }
+                        }}
                         className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                             isActive
                                 ? 'bg-primary/10 text-primary'
@@ -66,7 +72,13 @@ export function BottomNav() {
                 return (
                     <button
                         key={item.to}
-                        onClick={() => navigate(item.to)}
+                        onClick={() => {
+                            if (item.to === activeItem) {
+                                window.dispatchEvent(new CustomEvent('nav:tap-active', { detail: item.to }));
+                            } else {
+                                navigate(item.to);
+                            }
+                        }}
                         className={`flex flex-1 flex-col items-center justify-center gap-1 text-xs font-medium transition-colors ${
                             isActive ? 'text-primary' : 'text-muted hover:text-foreground'
                         }`}

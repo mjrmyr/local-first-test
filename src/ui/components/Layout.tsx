@@ -14,7 +14,7 @@ export function Layout({ children }: LayoutProps) {
     return (
         <div className="flex flex-col h-dvh bg-canvas">
             <TopNav />
-            <div className="flex-1 overflow-y-auto">{children}</div>
+            <div className="flex flex-1 flex-col overflow-y-auto min-h-0">{children}</div>
             <BottomNav />
         </div>
     );
