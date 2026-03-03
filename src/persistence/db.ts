@@ -2,11 +2,13 @@ import Dexie, { type Table } from 'dexie';
 import type { Athlete } from '../domain/models/athlete';
 import type { TrainingZones } from '../domain/models/trainingZone';
 import type { Threshold } from '../domain/models/threshold';
+import type { Workout } from '../domain/models/workout';
 
 export class KaenoDB extends Dexie {
     athletes!: Table<Athlete>;
     trainingZones!: Table<TrainingZones>;
     thresholds!: Table<Threshold>;
+    workouts!: Table<Workout>;
 
     constructor() {
         super('kaenoDB');
@@ -21,6 +23,12 @@ export class KaenoDB extends Dexie {
             athletes: 'id, deleted, updatedAt',
             trainingZones: 'id, discipline, metric, deleted, updatedAt',
             thresholds: 'id, discipline, metric, deleted, updatedAt',
+        });
+        this.version(4).stores({
+            athletes: 'id, deleted, updatedAt',
+            trainingZones: 'id, discipline, metric, deleted, updatedAt',
+            thresholds: 'id, discipline, metric, deleted, updatedAt',
+            workouts: 'id, discipline',
         });
     }
 }
