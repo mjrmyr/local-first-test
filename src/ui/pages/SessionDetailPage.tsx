@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { sessionService } from '../../application/sessionService';
 import type { Session } from '../../domain/models/session';
-import type { Discipline } from '../../domain/types';
+import type { WorkoutStep } from '../../domain/models/workout';
+import type { Discipline, WorkoutStepUnit } from '../../domain/types';
 import { Button } from '../components/Button';
 
 const DISCIPLINE_LABELS: Record<Discipline, string> = {
@@ -116,6 +117,15 @@ export function SessionDetailPage({
                     <p className="text-sm text-muted">{session.note}</p>
                 )}
 
+                {session.steps && session.steps.length > 0 && (
+                    <section className="flex flex-col gap-3">
+                        <h2 className="text-base font-semibold text-foreground">Steps</h2>
+                        {session.steps.map((step, i) => (
+                            <StepCard key={i} step={step} index={i} />
+                        ))}
+                    </section>
+                )}
+
                 <Button onClick={onEdit}>Edit Session</Button>
 
                 {confirmDelete ? (
@@ -136,6 +146,32 @@ export function SessionDetailPage({
                     </Button>
                 )}
             </main>
+        </div>
+    );
+}
+
+function formatStepValue(value: number, unit: WorkoutStepUnit): string {
+    switch (unit) {
+        case 'kilometers': return `${value / 1000} km`;
+        case 'meters': return `${value} m`;
+        case 'hours': return `${value / 3600} h`;
+        case 'minutes': return `${value / 60} min`;
+    }
+}
+
+function StepCard({ step, index }: { step: WorkoutStep; index: number }) {
+    return (
+        <div className="rounded-xl border border-navy/10 bg-surface p-4 flex flex-col gap-1.5">
+            <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-foreground">{step.name || `Step ${index + 1}`}</span>
+                <span className="text-xs text-muted capitalize">{step.type}{step.type === 'repeat' && step.repeats ? ` ×${step.repeats}` : ''}</span>
+            </div>
+            <span className="text-xs text-muted">
+                {formatStepValue(step.value, step.unit)}
+            </span>
+            {step.notes && (
+                <p className="text-xs text-muted/70 mt-1">{step.notes}</p>
+            )}
         </div>
     );
 }

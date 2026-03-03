@@ -13,7 +13,6 @@ import {
     startOfWeek,
     toDateString,
 } from '../../helpers/date';
-import { Button } from '../components/Button';
 import { SessionDetailPage } from './SessionDetailPage';
 import { SessionEditorPage } from './SessionEditorPage';
 
@@ -113,7 +112,7 @@ export function CalendarPage() {
                         <MobileHeader
                             onAdd={() => setViewState({ mode: 'new', date: toDateString(new Date()) })}
                         />
-                        <div className="flex-1 overflow-y-auto">
+                        <div className="flex-1 overflow-hidden">
                             <ListView
                                 sessions={sessions}
                                 onSelect={(id) => setViewState({ mode: 'view', id })}
@@ -291,7 +290,11 @@ function DesktopHeader({
     );
 }
 
-// ─── List View (infinite scroll by date groups) ─────────────────────
+// ─── List View (infinite scroll by date, every date shown) ──────────
+
+const INITIAL_PAST_DAYS = 30;
+const INITIAL_FUTURE_DAYS = 60;
+const LOAD_MORE_DAYS = 30;
 
 function ListView({
     sessions,
@@ -302,46 +305,85 @@ function ListView({
     onSelect: (id: string) => void;
     onAddOnDate: (date: string) => void;
 }) {
-    // Group sessions by date, sorted descending (newest first for past, but show upcoming first)
-    const today = toDateString(new Date());
-    const grouped = useMemo(() => {
+    const today = new Date();
+    const todayStr = toDateString(today);
+
+    const [pastDays, setPastDays] = useState(INITIAL_PAST_DAYS);
+    const [futureDays, setFutureDays] = useState(INITIAL_FUTURE_DAYS);
+
+    const sessionsByDate = useMemo(() => {
         const map = new Map<string, Session[]>();
-        // Sort sessions by date ascending
-        const sorted = [...sessions].sort((a, b) => a.date.localeCompare(b.date));
-        for (const s of sorted) {
+        for (const s of sessions) {
             const arr = map.get(s.date) ?? [];
             arr.push(s);
             map.set(s.date, arr);
         }
-        return Array.from(map.entries());
+        return map;
     }, [sessions]);
 
-    // Split into upcoming and past
-    const upcoming = grouped.filter(([date]) => date >= today);
-    const past = grouped.filter(([date]) => date < today).reverse();
-    const ordered = [...upcoming, ...past];
+    // Generate all dates in range
+    const dates = useMemo(() => {
+        const result: string[] = [];
+        const start = addDays(today, -pastDays);
+        const totalDays = pastDays + futureDays + 1;
+        for (let i = 0; i < totalDays; i++) {
+            result.push(toDateString(addDays(start, i)));
+        }
+        return result;
+    }, [pastDays, futureDays]);
 
     const todayRef = useRef<HTMLDivElement>(null);
-    useEffect(() => {
-        todayRef.current?.scrollIntoView({ block: 'start' });
-    }, []);
+    const topSentinelRef = useRef<HTMLDivElement>(null);
+    const bottomSentinelRef = useRef<HTMLDivElement>(null);
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
+    const hasScrolledToToday = useRef(false);
 
-    if (sessions.length === 0) {
-        return (
-            <div className="flex flex-col items-center justify-center gap-4 p-8">
-                <p className="text-sm text-muted italic">No sessions yet</p>
-                <Button onClick={() => onAddOnDate(today)} className="max-w-xs">
-                    + Create Session
-                </Button>
-            </div>
+    // Scroll to today on first render
+    useEffect(() => {
+        if (!hasScrolledToToday.current && todayRef.current) {
+            todayRef.current.scrollIntoView({ block: 'start' });
+            hasScrolledToToday.current = true;
+        }
+    }, [dates]);
+
+    // IntersectionObserver to load more dates at top/bottom
+    useEffect(() => {
+        const container = scrollContainerRef.current;
+        if (!container) return;
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                for (const entry of entries) {
+                    if (!entry.isIntersecting) continue;
+                    if (entry.target === topSentinelRef.current) {
+                        const prevHeight = container.scrollHeight;
+                        setPastDays((d) => d + LOAD_MORE_DAYS);
+                        // Preserve scroll position after prepending
+                        requestAnimationFrame(() => {
+                            const newHeight = container.scrollHeight;
+                            container.scrollTop += newHeight - prevHeight;
+                        });
+                    } else if (entry.target === bottomSentinelRef.current) {
+                        setFutureDays((d) => d + LOAD_MORE_DAYS);
+                    }
+                }
+            },
+            { root: container, rootMargin: '200px' },
         );
-    }
+
+        if (topSentinelRef.current) observer.observe(topSentinelRef.current);
+        if (bottomSentinelRef.current) observer.observe(bottomSentinelRef.current);
+
+        return () => observer.disconnect();
+    }, [dates]);
 
     return (
-        <div className="flex flex-col">
-            {ordered.map(([date, dateSessions]) => {
+        <div ref={scrollContainerRef} className="flex flex-col h-full overflow-y-auto">
+            <div ref={topSentinelRef} className="h-1 shrink-0" />
+            {dates.map((date) => {
                 const d = new Date(date + 'T00:00:00');
-                const isDateToday = date === today;
+                const isDateToday = date === todayStr;
+                const daySessions = sessionsByDate.get(date) ?? [];
                 return (
                     <div key={date} ref={isDateToday ? todayRef : undefined}>
                         <div className={`sticky top-0 z-10 flex items-center justify-between px-6 py-2 ${
@@ -362,16 +404,23 @@ function ListView({
                                 +
                             </button>
                         </div>
-                        {dateSessions.map((session) => (
-                            <SessionRow
-                                key={session.id}
-                                session={session}
-                                onClick={() => onSelect(session.id)}
-                            />
-                        ))}
+                        {daySessions.length > 0 ? (
+                            daySessions.map((session) => (
+                                <SessionRow
+                                    key={session.id}
+                                    session={session}
+                                    onClick={() => onSelect(session.id)}
+                                />
+                            ))
+                        ) : (
+                            <div className="px-6 py-3 border-b border-navy/5">
+                                <span className="text-xs text-muted/50 italic">No sessions</span>
+                            </div>
+                        )}
                     </div>
                 );
             })}
+            <div ref={bottomSentinelRef} className="h-1 shrink-0" />
         </div>
     );
 }
