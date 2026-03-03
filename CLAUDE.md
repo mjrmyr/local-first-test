@@ -32,16 +32,19 @@ See [docs/conventions.md](docs/conventions.md) for coding conventions (DTOs, nam
 
 ## Autonomous Workflow
 
-When given a task, Claude should work fully autonomously and deliver a pull request:
+**Every task MUST end with an open pull request.** The task is not complete until a PR URL has been returned to the user.
 
-1. **Branch** — create a feature branch: `feat/<short-kebab-description>` (e.g. `feat/add-session-notes`)
-2. **Implement** — read relevant domain specs and conventions before writing code
-3. **Verify** — run `npm run build` and `npm run test` (if tests exist); fix any errors before proceeding
-4. **Commit** — write a conventional commit message (`feat:`, `fix:`, `refactor:`, etc.)
-5. **Push** — push the branch to `origin`
-6. **PR** — open a pull request against `main` using `gh pr create` with:
-   - A concise title (under 70 chars)
-   - A body summarising what changed and why, plus a short test plan
-   - Label `auto` if available
+Do not use plan mode. Do not stop after editing files locally. Do not stop after committing. Do not ask for permission to proceed between steps. Execute all steps in sequence.
+
+For every task, execute ALL of the following steps in order — no exceptions:
+
+1. **Branch** — `git checkout -b feat/<short-kebab-description>` (e.g. `feat/add-session-notes`)
+2. **Implement** — read relevant domain specs and conventions, then write code
+3. **Verify** — run `npm run build` and `npm run test` (if tests exist); fix errors before continuing
+4. **Commit** — `git add` changed files and commit with a conventional message (`feat:`, `fix:`, `refactor:`, etc.)
+5. **Push** — `git push -u origin HEAD`
+6. **PR** — `gh pr create` against `main` with a concise title (under 70 chars), a body summarising what changed and why, a short test plan, and label `auto` if available
+
+**The final message to the user MUST include the PR URL.**
 
 Never force-push to `main`. Never skip broken builds — fix them first.
