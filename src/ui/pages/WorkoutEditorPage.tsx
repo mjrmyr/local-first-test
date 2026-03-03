@@ -199,7 +199,6 @@ export function WorkoutEditorPage({
                 <FormField label="Name" error={nameError}>
                     <Input
                         value={name}
-                        placeholder="e.g. Tempo Run"
                         onChange={(e) => { setName(e.target.value); setNameError(''); }}
                     />
                 </FormField>
@@ -228,7 +227,6 @@ export function WorkoutEditorPage({
                         <Input
                             type="number"
                             value={totalDuration}
-                            placeholder="Optional"
                             onChange={(e) => { setTotalDuration(e.target.value); setTotalDurationError(''); }}
                         />
                     </FormField>
@@ -236,7 +234,6 @@ export function WorkoutEditorPage({
                         <Input
                             type="number"
                             value={totalDistance}
-                            placeholder="Optional"
                             onChange={(e) => { setTotalDistance(e.target.value); setTotalDistanceError(''); }}
                         />
                     </FormField>
@@ -245,10 +242,9 @@ export function WorkoutEditorPage({
                 <FormField label="Notes" error="">
                     <textarea
                         value={notes}
-                        placeholder="Optional notes"
                         onChange={(e) => setNotes(e.target.value)}
                         rows={2}
-                        className="w-full rounded-xl border border-navy/15 bg-surface px-3 py-2.5 text-foreground placeholder-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"
+                        className="w-full rounded-xl border border-navy/15 bg-surface px-3 py-2.5 text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"
                     />
                 </FormField>
 
@@ -354,7 +350,6 @@ function StepEditor({
             <FormField label="Step Name" error={errors?.name}>
                 <Input
                     value={step.name}
-                    placeholder="e.g. Warm Up"
                     onChange={(e) => onChange({ name: e.target.value })}
                 />
             </FormField>
@@ -383,7 +378,6 @@ function StepEditor({
                     <Input
                         type="number"
                         value={step.repeats !== undefined ? String(step.repeats) : ''}
-                        placeholder="e.g. 4"
                         min={2}
                         onChange={(e) => onChange({ repeats: e.target.value ? Number(e.target.value) : undefined })}
                     />
@@ -432,7 +426,6 @@ function StepEditor({
                     <Input
                         type="number"
                         value={fromBaseValue(step.value, step.unit) || ''}
-                        placeholder="e.g. 10"
                         min={0}
                         onChange={(e) => {
                             const displayVal = e.target.value ? Number(e.target.value) : 0;
@@ -443,10 +436,11 @@ function StepEditor({
             </div>
 
             <FormField label="Step Notes" error="">
-                <Input
+                <textarea
                     value={step.notes ?? ''}
-                    placeholder="Optional"
                     onChange={(e) => onChange({ notes: e.target.value || undefined })}
+                    rows={2}
+                    className="w-full rounded-xl border border-navy/15 bg-surface px-3 py-2.5 text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"
                 />
             </FormField>
         </div>
