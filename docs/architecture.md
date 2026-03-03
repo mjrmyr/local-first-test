@@ -40,7 +40,9 @@
 
 ## Navigation & Routing
 
-The app uses React Router with a flat routing strategy — all resources have top-level routes, no nesting.
+The app uses React Router with a flat routing strategy — each domain has a single top-level route, no nested sub-routes for create/edit views.
+
+Domains like Workouts, Thresholds, and Training Zones handle create, detail, and edit views internally via component state (conditional rendering), without changing the URL.
 
 ```
 /onboarding                Onboarding wizard (first launch only)
@@ -48,12 +50,9 @@ The app uses React Router with a flat routing strategy — all resources have to
 /sessions/new              Session create
 /sessions/:id              Session detail
 /sessions/:id/edit         Session edit
-/workouts                  Workout library
-/workouts/new              Workout create
-/workouts/:id              Workout detail
-/workouts/:id/edit         Workout edit
-/thresholds                Thresholds
-/training-zones            Training zones
+/workouts                  Workout library (create/detail/edit handled internally)
+/thresholds                Thresholds (create/edit handled internally)
+/training-zones            Training zones (create/edit handled internally)
 /profile                   Athlete profile
 ```
 

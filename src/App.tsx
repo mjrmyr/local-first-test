@@ -10,6 +10,8 @@ import { ProfilePage } from './ui/pages/ProfilePage';
 import { SettingsPage } from './ui/pages/SettingsPage';
 import { ThresholdsPage } from './ui/pages/ThresholdsPage';
 import { TrainingZonesPage } from './ui/pages/TrainingZonesPage';
+import { WorkoutsPage } from './ui/pages/WorkoutsPage';
+
 
 type AppStatus = 'loading' | 'onboarding' | 'ready';
 
@@ -66,6 +68,7 @@ function App() {
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/training-zones" element={<TrainingZonesPage />} />
                 <Route path="/thresholds" element={<ThresholdsPage />} />
+                <Route path="/workouts" element={<WorkoutsPage />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Route>
         </Routes>

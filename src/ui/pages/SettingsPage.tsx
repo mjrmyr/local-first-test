@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { AnalyticsIcon, HomeIcon, SettingsIcon } from '../icons';
+import { AnalyticsIcon, CalendarIcon, HomeIcon, SettingsIcon } from '../icons';
 
 type SettingsOption = {
     label: string;
@@ -26,6 +26,12 @@ const options: SettingsOption[] = [
         description: 'FTP, lactate threshold and CSS values',
         to: '/thresholds',
         icon: <SettingsIcon className="size-5" />,
+    },
+    {
+        label: 'Workout Library',
+        description: 'Reusable workout templates',
+        to: '/workouts',
+        icon: <CalendarIcon className="size-5" />,
     },
 ];
 

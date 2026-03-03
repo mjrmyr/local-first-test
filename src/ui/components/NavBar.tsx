@@ -16,7 +16,8 @@ function getActiveItem(pathname: string): string {
         pathname.startsWith('/settings') ||
         pathname.startsWith('/profile') ||
         pathname.startsWith('/training-zones') ||
-        pathname.startsWith('/thresholds')
+        pathname.startsWith('/thresholds') ||
+        pathname.startsWith('/workouts')
     )
         return '/settings';
     return '/';
