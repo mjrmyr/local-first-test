@@ -73,20 +73,8 @@ export function CalendarPage() {
         load();
     }
 
-    // ─── Editor / Detail overlays (full-screen on mobile, inline on desktop) ──
-
-    if (viewState?.mode === 'new' || viewState?.mode === 'edit') {
-        return (
-            <SessionEditorPage
-                id={viewState.mode === 'edit' ? viewState.id : undefined}
-                initialDate={viewState.mode === 'new' ? viewState.date : undefined}
-                onBack={() => setViewState(null)}
-                onSave={handleSave}
-            />
-        );
-    }
-
     const viewingSession = viewState?.mode === 'view' ? viewState : null;
+    const editingSession = viewState?.mode === 'edit' || viewState?.mode === 'new' ? viewState : null;
 
     if (loading) {
         return (
@@ -98,9 +86,16 @@ export function CalendarPage() {
 
     return (
         <div className="flex flex-1 flex-col overflow-hidden">
-            {/* Mobile: list view or full-screen detail */}
+            {/* Mobile: list view, full-screen detail, or full-screen editor */}
             <div className="flex flex-1 flex-col lg:hidden overflow-hidden">
-                {viewingSession ? (
+                {editingSession ? (
+                    <SessionEditorPage
+                        id={editingSession.mode === 'edit' ? editingSession.id : undefined}
+                        initialDate={editingSession.mode === 'new' ? editingSession.date : undefined}
+                        onBack={() => setViewState(null)}
+                        onSave={handleSave}
+                    />
+                ) : viewingSession ? (
                     <SessionDetailPage
                         id={viewingSession.id}
                         onBack={() => setViewState(null)}
@@ -133,7 +128,7 @@ export function CalendarPage() {
                     onAdd={() => setViewState({ mode: 'new', date: toDateString(new Date()) })}
                 />
                 <div className="flex flex-1 overflow-hidden">
-                    <div className={`flex-1 overflow-y-auto ${viewingSession ? 'border-r border-navy/10' : ''}`}>
+                    <div className={`flex-1 overflow-y-auto ${viewingSession || editingSession ? 'border-r border-navy/10' : ''}`}>
                         {desktopView === 'list' && (
                             <ListView
                                 sessions={sessions}
@@ -158,8 +153,17 @@ export function CalendarPage() {
                             />
                         )}
                     </div>
-                    {/* Desktop split detail panel */}
-                    {viewingSession && (
+                    {/* Desktop split panel: editor or detail */}
+                    {editingSession ? (
+                        <div className="w-[400px] shrink-0 overflow-y-auto">
+                            <SessionEditorPage
+                                id={editingSession.mode === 'edit' ? editingSession.id : undefined}
+                                initialDate={editingSession.mode === 'new' ? editingSession.date : undefined}
+                                onBack={() => setViewState(null)}
+                                onSave={handleSave}
+                            />
+                        </div>
+                    ) : viewingSession ? (
                         <div className="w-[400px] shrink-0 overflow-y-auto">
                             <SessionDetailPage
                                 id={viewingSession.id}
@@ -168,7 +172,7 @@ export function CalendarPage() {
                                 onDelete={handleDelete}
                             />
                         </div>
-                    )}
+                    ) : null}
                 </div>
             </div>
         </div>
