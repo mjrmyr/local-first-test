@@ -1,11 +1,12 @@
 import type { EntityMetadata } from '../entities';
-import type { Discipline, WorkoutStepType, WorkoutStepMetric } from '../types';
+import type { Discipline, WorkoutStepType, WorkoutStepMetric, WorkoutStepUnit } from '../types';
 
 export interface WorkoutStep {
     name: string;
     type: WorkoutStepType;
     repeats?: number;
     metric: WorkoutStepMetric;
+    unit: WorkoutStepUnit;
     value: number;
     notes?: string;
 }

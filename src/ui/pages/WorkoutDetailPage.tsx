@@ -11,10 +11,26 @@ const DISCIPLINE_LABELS: Record<Discipline, string> = {
     run: 'Running',
 };
 
-const STEP_METRIC_LABELS: Record<string, string> = {
-    minutes: 'min',
+const UNIT_LABELS: Record<string, string> = {
+    meters: 'm',
     kilometers: 'km',
+    minutes: 'min',
+    hours: 'h',
 };
+
+function fromBaseValue(value: number, unit: string): number {
+    switch (unit) {
+        case 'kilometers': return value / 1000;
+        case 'hours': return value / 3600;
+        case 'minutes': return value / 60;
+        default: return value;
+    }
+}
+
+function formatStepValue(value: number, unit: string): string {
+    const display = fromBaseValue(value, unit);
+    return Number.isInteger(display) ? String(display) : display.toFixed(1);
+}
 
 export function WorkoutDetailPage() {
     const { id } = useParams<{ id: string }>();
@@ -48,7 +64,7 @@ export function WorkoutDetailPage() {
             <div className="flex min-h-screen flex-col bg-canvas">
                 <header className="flex items-center gap-3 px-6 py-4 border-b border-navy/10">
                     <button
-                        onClick={() => navigate('/workouts')}
+                        onClick={() => navigate(-1)}
                         className="text-sm font-medium text-muted hover:text-foreground"
                     >
                         ← Back
@@ -65,7 +81,7 @@ export function WorkoutDetailPage() {
         <div className="flex min-h-screen flex-col bg-canvas">
             <header className="flex items-center gap-3 px-6 py-4 border-b border-navy/10">
                 <button
-                    onClick={() => navigate('/workouts')}
+                    onClick={() => navigate(-1)}
                     className="text-sm font-medium text-muted hover:text-foreground"
                 >
                     ← Back
@@ -108,7 +124,7 @@ export function WorkoutDetailPage() {
                                     </span>
                                     <span className="text-xs text-muted">
                                         {step.type === 'repeat' && `${step.repeats}× `}
-                                        {step.value} {STEP_METRIC_LABELS[step.metric]}
+                                        {formatStepValue(step.value, step.unit)} {UNIT_LABELS[step.unit]}
                                     </span>
                                 </div>
                                 {step.notes && (

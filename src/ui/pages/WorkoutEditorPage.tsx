@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { workoutService } from '../../application/workoutService';
 import type { WorkoutStep } from '../../domain/models/workout';
-import type { Discipline, WorkoutStepMetric, WorkoutStepType } from '../../domain/types';
+import type { Discipline, WorkoutStepMetric, WorkoutStepType, WorkoutStepUnit } from '../../domain/types';
 import { validateWorkout, type StepErrors } from '../../domain/rules/validateWorkout';
 import { Button } from '../components/Button';
 import { FormField } from '../components/FormField';
@@ -14,8 +14,37 @@ const DISCIPLINE_OPTIONS: { value: Discipline; label: string }[] = [
     { value: 'run', label: 'Running' },
 ];
 
+const METRIC_UNITS: Record<WorkoutStepMetric, { value: WorkoutStepUnit; label: string }[]> = {
+    distance: [
+        { value: 'meters', label: 'Meters' },
+        { value: 'kilometers', label: 'Kilometers' },
+    ],
+    time: [
+        { value: 'minutes', label: 'Minutes' },
+        { value: 'hours', label: 'Hours' },
+    ],
+};
+
+function toBaseValue(value: number, unit: WorkoutStepUnit): number {
+    switch (unit) {
+        case 'kilometers': return value * 1000;
+        case 'hours': return value * 3600;
+        case 'minutes': return value * 60;
+        case 'meters': return value;
+    }
+}
+
+function fromBaseValue(value: number, unit: WorkoutStepUnit): number {
+    switch (unit) {
+        case 'kilometers': return value / 1000;
+        case 'hours': return value / 3600;
+        case 'minutes': return value / 60;
+        case 'meters': return value;
+    }
+}
+
 function emptyStep(): WorkoutStep {
-    return { name: '', type: 'single', metric: 'minutes', value: 0 };
+    return { name: '', type: 'single', metric: 'distance', unit: 'meters', value: 0 };
 }
 
 export function WorkoutEditorPage() {
@@ -151,7 +180,7 @@ export function WorkoutEditorPage() {
         <div className="flex min-h-screen flex-col bg-canvas">
             <header className="flex items-center gap-3 px-6 py-4 border-b border-navy/10">
                 <button
-                    onClick={() => navigate('/workouts')}
+                    onClick={() => navigate(-1)}
                     className="text-sm font-medium text-muted hover:text-foreground"
                 >
                     ← Back
@@ -220,16 +249,7 @@ export function WorkoutEditorPage() {
 
                 {/* Steps */}
                 <section>
-                    <div className="flex items-center justify-between mb-3">
-                        <h2 className="text-base font-semibold text-foreground">Steps</h2>
-                        <button
-                            type="button"
-                            onClick={() => setSteps((prev) => [...prev, emptyStep()])}
-                            className="text-sm font-medium text-primary hover:text-primary-dark"
-                        >
-                            + Add Step
-                        </button>
-                    </div>
+                    <h2 className="text-base font-semibold text-foreground mb-3">Steps</h2>
                     {stepsError && <p className="text-sm text-error mb-2">{stepsError}</p>}
 
                     <div className="flex flex-col gap-4">
@@ -246,6 +266,14 @@ export function WorkoutEditorPage() {
                             />
                         ))}
                     </div>
+
+                    <button
+                        type="button"
+                        onClick={() => setSteps((prev) => [...prev, emptyStep()])}
+                        className="mt-4 w-full text-sm font-medium text-primary hover:text-primary-dark"
+                    >
+                        + Add Step
+                    </button>
                 </section>
 
                 {submitError && <p className="text-sm text-error">{submitError}</p>}
@@ -357,32 +385,54 @@ function StepEditor({
                 </FormField>
             )}
 
+            <FormField label="Metric" error={errors?.metric}>
+                <div className="flex gap-2">
+                    {(['distance', 'time'] as WorkoutStepMetric[]).map((m) => (
+                        <button
+                            key={m}
+                            type="button"
+                            onClick={() => {
+                                const defaultUnit = METRIC_UNITS[m][0].value;
+                                onChange({ metric: m, unit: defaultUnit, value: 0 });
+                            }}
+                            className={`flex-1 rounded-xl border-2 px-2 py-2 text-sm font-medium transition-colors ${
+                                step.metric === m
+                                    ? 'border-primary bg-primary/10 text-primary-dark'
+                                    : 'border-navy/10 bg-surface text-foreground hover:border-navy/15'
+                            }`}
+                        >
+                            {m === 'distance' ? 'Distance' : 'Time'}
+                        </button>
+                    ))}
+                </div>
+            </FormField>
+
             <div className="grid grid-cols-2 gap-3">
-                <FormField label="Metric" error={errors?.metric}>
-                    <div className="flex gap-2">
-                        {(['minutes', 'kilometers'] as WorkoutStepMetric[]).map((m) => (
-                            <button
-                                key={m}
-                                type="button"
-                                onClick={() => onChange({ metric: m })}
-                                className={`flex-1 rounded-xl border-2 px-2 py-2 text-sm font-medium transition-colors ${
-                                    step.metric === m
-                                        ? 'border-primary bg-primary/10 text-primary-dark'
-                                        : 'border-navy/10 bg-surface text-foreground hover:border-navy/15'
-                                }`}
-                            >
-                                {m === 'minutes' ? 'Min' : 'Km'}
-                            </button>
+                <FormField label="Unit" error={errors?.unit}>
+                    <select
+                        value={step.unit}
+                        onChange={(e) => {
+                            const newUnit = e.target.value as WorkoutStepUnit;
+                            const displayValue = fromBaseValue(step.value, step.unit);
+                            onChange({ unit: newUnit, value: toBaseValue(displayValue, newUnit) });
+                        }}
+                        className="w-full rounded-xl border border-navy/15 bg-surface px-3 py-2.5 text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    >
+                        {METRIC_UNITS[step.metric].map((u) => (
+                            <option key={u.value} value={u.value}>{u.label}</option>
                         ))}
-                    </div>
+                    </select>
                 </FormField>
                 <FormField label="Value" error={errors?.value}>
                     <Input
                         type="number"
-                        value={step.value || ''}
+                        value={fromBaseValue(step.value, step.unit) || ''}
                         placeholder="e.g. 10"
                         min={0}
-                        onChange={(e) => onChange({ value: e.target.value ? Number(e.target.value) : 0 })}
+                        onChange={(e) => {
+                            const displayVal = e.target.value ? Number(e.target.value) : 0;
+                            onChange({ value: toBaseValue(displayVal, step.unit) });
+                        }}
                     />
                 </FormField>
             </div>

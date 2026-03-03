@@ -13,10 +13,26 @@ const DISCIPLINE_LABELS: Record<Discipline, string> = {
 
 const ALL_DISCIPLINES: Discipline[] = ['swim', 'bike', 'run'];
 
-const STEP_METRIC_LABELS: Record<string, string> = {
-    minutes: 'min',
+const UNIT_LABELS: Record<string, string> = {
+    meters: 'm',
     kilometers: 'km',
+    minutes: 'min',
+    hours: 'h',
 };
+
+function fromBaseValue(value: number, unit: string): number {
+    switch (unit) {
+        case 'kilometers': return value / 1000;
+        case 'hours': return value / 3600;
+        case 'minutes': return value / 60;
+        default: return value;
+    }
+}
+
+function formatStepValue(value: number, unit: string): string {
+    const display = fromBaseValue(value, unit);
+    return Number.isInteger(display) ? String(display) : display.toFixed(1);
+}
 
 export function WorkoutsPage() {
     const navigate = useNavigate();
@@ -143,7 +159,7 @@ function WorkoutCard({
     const summary = workout.steps
         .map((s) => {
             const prefix = s.type === 'repeat' ? `${s.repeats}×` : '';
-            return `${prefix}${s.value} ${STEP_METRIC_LABELS[s.metric]}`;
+            return `${prefix}${formatStepValue(s.value, s.unit)} ${UNIT_LABELS[s.unit]}`;
         })
         .join(' → ');
 

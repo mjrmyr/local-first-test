@@ -14,6 +14,7 @@ export interface StepErrors {
     type?: string;
     repeats?: string;
     metric?: string;
+    unit?: string;
     value?: string;
 }
 
@@ -42,6 +43,14 @@ function validateStep(step: WorkoutStep): StepErrors | null {
         errors.metric = 'Metric is required';
     }
 
+    if (!step.unit) {
+        errors.unit = 'Unit is required';
+    } else if (step.metric === 'distance' && !['meters', 'kilometers'].includes(step.unit)) {
+        errors.unit = 'Invalid unit for distance';
+    } else if (step.metric === 'time' && !['minutes', 'hours'].includes(step.unit)) {
+        errors.unit = 'Invalid unit for time';
+    }
+
     if (step.value === undefined || step.value === null || isNaN(step.value)) {
         errors.value = 'Value is required';
     } else if (step.value <= 0) {
@@ -53,6 +62,7 @@ function validateStep(step: WorkoutStep): StepErrors | null {
         errors.type !== undefined ||
         errors.repeats !== undefined ||
         errors.metric !== undefined ||
+        errors.unit !== undefined ||
         errors.value !== undefined;
 
     return hasErrors ? errors : null;
