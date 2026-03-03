@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
 import { workoutService } from '../../application/workoutService';
 import type { WorkoutStep } from '../../domain/models/workout';
 import type { Discipline, WorkoutStepMetric, WorkoutStepType, WorkoutStepUnit } from '../../domain/types';
@@ -47,9 +46,15 @@ function emptyStep(): WorkoutStep {
     return { name: '', type: 'single', metric: 'distance', unit: 'meters', value: 0 };
 }
 
-export function WorkoutEditorPage() {
-    const { id } = useParams<{ id: string }>();
-    const navigate = useNavigate();
+export function WorkoutEditorPage({
+    id,
+    onBack,
+    onSave,
+}: {
+    id?: string;
+    onBack: () => void;
+    onSave: () => void;
+}) {
     const isEditing = !!id;
 
     const [name, setName] = useState('');
@@ -162,7 +167,7 @@ export function WorkoutEditorPage() {
         setSubmitting(false);
 
         if (result.ok) {
-            navigate('/workouts');
+            onSave();
         } else {
             setSubmitError(result.error);
         }
@@ -180,7 +185,7 @@ export function WorkoutEditorPage() {
         <div className="flex min-h-screen flex-col bg-canvas">
             <header className="flex items-center gap-3 px-6 py-4 border-b border-navy/10">
                 <button
-                    onClick={() => navigate(-1)}
+                    onClick={onBack}
                     className="text-sm font-medium text-muted hover:text-foreground"
                 >
                     ← Back

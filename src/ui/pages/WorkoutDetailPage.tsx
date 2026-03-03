@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
 import { workoutService } from '../../application/workoutService';
 import type { Workout } from '../../domain/models/workout';
 import type { Discipline } from '../../domain/types';
@@ -32,9 +31,15 @@ function formatStepValue(value: number, unit: string): string {
     return Number.isInteger(display) ? String(display) : display.toFixed(1);
 }
 
-export function WorkoutDetailPage() {
-    const { id } = useParams<{ id: string }>();
-    const navigate = useNavigate();
+export function WorkoutDetailPage({
+    id,
+    onBack,
+    onEdit,
+}: {
+    id: string;
+    onBack: () => void;
+    onEdit: () => void;
+}) {
     const [workout, setWorkout] = useState<Workout | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
@@ -64,7 +69,7 @@ export function WorkoutDetailPage() {
             <div className="flex min-h-screen flex-col bg-canvas">
                 <header className="flex items-center gap-3 px-6 py-4 border-b border-navy/10">
                     <button
-                        onClick={() => navigate(-1)}
+                        onClick={onBack}
                         className="text-sm font-medium text-muted hover:text-foreground"
                     >
                         ← Back
@@ -81,7 +86,7 @@ export function WorkoutDetailPage() {
         <div className="flex min-h-screen flex-col bg-canvas">
             <header className="flex items-center gap-3 px-6 py-4 border-b border-navy/10">
                 <button
-                    onClick={() => navigate(-1)}
+                    onClick={onBack}
                     className="text-sm font-medium text-muted hover:text-foreground"
                 >
                     ← Back
@@ -135,7 +140,7 @@ export function WorkoutDetailPage() {
                     </div>
                 </section>
 
-                <Button onClick={() => navigate(`/workouts/${workout.id}/edit`)}>
+                <Button onClick={onEdit}>
                     Edit Workout
                 </Button>
             </main>

@@ -4,6 +4,8 @@ import { workoutService } from '../../application/workoutService';
 import type { Workout } from '../../domain/models/workout';
 import type { Discipline } from '../../domain/types';
 import { Button } from '../components/Button';
+import { WorkoutDetailPage } from './WorkoutDetailPage';
+import { WorkoutEditorPage } from './WorkoutEditorPage';
 
 const DISCIPLINE_LABELS: Record<Discipline, string> = {
     swim: 'Swimming',
@@ -34,6 +36,12 @@ function formatStepValue(value: number, unit: string): string {
     return Number.isInteger(display) ? String(display) : display.toFixed(1);
 }
 
+type ViewState =
+    | null
+    | { mode: 'new' }
+    | { mode: 'view'; id: string }
+    | { mode: 'edit'; id: string };
+
 export function WorkoutsPage() {
     const navigate = useNavigate();
     const [workouts, setWorkouts] = useState<Workout[]>([]);
@@ -41,6 +49,7 @@ export function WorkoutsPage() {
     const [loadError, setLoadError] = useState('');
     const [deleteError, setDeleteError] = useState('');
     const [filter, setFilter] = useState<Discipline | 'all'>('all');
+    const [viewState, setViewState] = useState<ViewState>(null);
 
     useEffect(() => {
         load();
@@ -68,6 +77,26 @@ export function WorkoutsPage() {
     }
 
     const filtered = filter === 'all' ? workouts : workouts.filter((w) => w.discipline === filter);
+
+    if (viewState?.mode === 'new' || viewState?.mode === 'edit') {
+        return (
+            <WorkoutEditorPage
+                id={viewState.mode === 'edit' ? viewState.id : undefined}
+                onBack={() => setViewState(null)}
+                onSave={() => { setViewState(null); load(); }}
+            />
+        );
+    }
+
+    if (viewState?.mode === 'view') {
+        return (
+            <WorkoutDetailPage
+                id={viewState.id}
+                onBack={() => setViewState(null)}
+                onEdit={() => setViewState({ mode: 'edit', id: viewState.id })}
+            />
+        );
+    }
 
     if (loading) {
         return (
@@ -130,14 +159,14 @@ export function WorkoutsPage() {
                         <WorkoutCard
                             key={workout.id}
                             workout={workout}
-                            onView={() => navigate(`/workouts/${workout.id}`)}
-                            onEdit={() => navigate(`/workouts/${workout.id}/edit`)}
+                            onView={() => setViewState({ mode: 'view', id: workout.id })}
+                            onEdit={() => setViewState({ mode: 'edit', id: workout.id })}
                             onDelete={() => handleDelete(workout)}
                         />
                     ))}
                 </div>
 
-                <Button onClick={() => navigate('/workouts/new')}>+ New Workout</Button>
+                <Button onClick={() => setViewState({ mode: 'new' })}>+ New Workout</Button>
             </main>
         </div>
     );
