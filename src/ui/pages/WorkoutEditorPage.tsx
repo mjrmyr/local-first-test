@@ -6,6 +6,8 @@ import { validateWorkout, type StepErrors } from '../../domain/rules/validateWor
 import { Button } from '../components/Button';
 import { FormField } from '../components/FormField';
 import { Input } from '../components/Input';
+import { Select } from '../components/Select';
+import { Textarea } from '../components/Textarea';
 
 const DISCIPLINE_OPTIONS: { value: Discipline; label: string }[] = [
     { value: 'swim', label: 'Swimming' },
@@ -196,14 +198,14 @@ export function WorkoutEditorPage({
             </header>
 
             <main className="flex flex-col gap-6 px-6 py-8 max-w-lg mx-auto w-full">
-                <FormField label="Name" error={nameError}>
+                <FormField label="Name" required error={nameError}>
                     <Input
                         value={name}
                         onChange={(e) => { setName(e.target.value); setNameError(''); }}
                     />
                 </FormField>
 
-                <FormField label="Discipline" error={disciplineError}>
+                <FormField label="Discipline" required error={disciplineError}>
                     <div className="flex gap-2">
                         {DISCIPLINE_OPTIONS.map((opt) => (
                             <button
@@ -239,12 +241,11 @@ export function WorkoutEditorPage({
                     </FormField>
                 </div>
 
-                <FormField label="Notes" error="">
-                    <textarea
+                <FormField label="Notes">
+                    <Textarea
                         value={notes}
                         onChange={(e) => setNotes(e.target.value)}
                         rows={2}
-                        className="w-full rounded-xl border border-navy/15 bg-surface px-3 py-2.5 text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"
                     />
                 </FormField>
 
@@ -347,14 +348,14 @@ function StepEditor({
                 </div>
             </div>
 
-            <FormField label="Step Name" error={errors?.name}>
+            <FormField label="Step Name" required error={errors?.name}>
                 <Input
                     value={step.name}
                     onChange={(e) => onChange({ name: e.target.value })}
                 />
             </FormField>
 
-            <FormField label="Type" error={errors?.type}>
+            <FormField label="Type" required error={errors?.type}>
                 <div className="flex gap-2">
                     {(['single', 'repeat'] as WorkoutStepType[]).map((t) => (
                         <button
@@ -374,7 +375,7 @@ function StepEditor({
             </FormField>
 
             {step.type === 'repeat' && (
-                <FormField label="Repeats" error={errors?.repeats}>
+                <FormField label="Repeats" required error={errors?.repeats}>
                     <Input
                         type="number"
                         value={step.repeats !== undefined ? String(step.repeats) : ''}
@@ -384,7 +385,7 @@ function StepEditor({
                 </FormField>
             )}
 
-            <FormField label="Metric" error={errors?.metric}>
+            <FormField label="Metric" required error={errors?.metric}>
                 <div className="flex gap-2">
                     {(['distance', 'time'] as WorkoutStepMetric[]).map((m) => (
                         <button
@@ -407,22 +408,21 @@ function StepEditor({
             </FormField>
 
             <div className="grid grid-cols-2 gap-3">
-                <FormField label="Unit" error={errors?.unit}>
-                    <select
+                <FormField label="Unit" required error={errors?.unit}>
+                    <Select
                         value={step.unit}
                         onChange={(e) => {
                             const newUnit = e.target.value as WorkoutStepUnit;
                             const displayValue = fromBaseValue(step.value, step.unit);
                             onChange({ unit: newUnit, value: toBaseValue(displayValue, newUnit) });
                         }}
-                        className="w-full rounded-xl border border-navy/15 bg-surface px-3 py-2.5 text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                     >
                         {METRIC_UNITS[step.metric].map((u) => (
                             <option key={u.value} value={u.value}>{u.label}</option>
                         ))}
-                    </select>
+                    </Select>
                 </FormField>
-                <FormField label="Value" error={errors?.value}>
+                <FormField label="Value" required error={errors?.value}>
                     <Input
                         type="number"
                         value={fromBaseValue(step.value, step.unit) || ''}
@@ -435,12 +435,11 @@ function StepEditor({
                 </FormField>
             </div>
 
-            <FormField label="Step Notes" error="">
-                <textarea
+            <FormField label="Step Notes">
+                <Textarea
                     value={step.notes ?? ''}
                     onChange={(e) => onChange({ notes: e.target.value || undefined })}
                     rows={2}
-                    className="w-full rounded-xl border border-navy/15 bg-surface px-3 py-2.5 text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"
                 />
             </FormField>
         </div>

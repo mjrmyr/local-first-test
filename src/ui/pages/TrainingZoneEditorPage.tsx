@@ -213,7 +213,6 @@ export function TrainingZoneEditorPage({ isEditing, discipline: paramDiscipline,
     }
 
     const currentMetric = metric as Metric;
-    const inputPlaceholder = currentMetric === 'pace' ? 'e.g. 5:30' : 'e.g. 100';
     const inputHint = currentMetric === 'pace' ? 'mm:ss per km — Min = slow end, Max = fast end' : '';
 
     return (
@@ -232,7 +231,7 @@ export function TrainingZoneEditorPage({ isEditing, discipline: paramDiscipline,
 
             <main className="flex flex-col gap-6 px-6 py-8 max-w-lg mx-auto w-full">
                 {/* Discipline selector — locked when editing */}
-                <FormField label="Discipline" error={disciplineError}>
+                <FormField label="Discipline" required error={disciplineError}>
                     <div className="flex gap-2">
                         {availableDisciplines.map((opt) => (
                             <button
@@ -254,7 +253,7 @@ export function TrainingZoneEditorPage({ isEditing, discipline: paramDiscipline,
 
                 {/* Metric selector — locked when editing */}
                 {discipline && (
-                    <FormField label="Metric" error={metricError}>
+                    <FormField label="Metric" required error={metricError}>
                         <div className="flex gap-2">
                             {availableMetrics.map((m) => (
                                 <button
@@ -296,7 +295,6 @@ export function TrainingZoneEditorPage({ isEditing, discipline: paramDiscipline,
                                     index={i}
                                     row={row}
                                     errors={zoneRowErrors[i]}
-                                    placeholder={inputPlaceholder}
                                     isPace={currentMetric === 'pace'}
                                     canRemove={rows.length > 1}
                                     onChange={(field, value) => updateRow(i, field, value)}
@@ -329,7 +327,6 @@ function ZoneRowEditor({
     index,
     row,
     errors,
-    placeholder,
     isPace,
     canRemove,
     onChange,
@@ -338,7 +335,6 @@ function ZoneRowEditor({
     index: number;
     row: ZoneRow;
     errors?: ZoneRowErrors;
-    placeholder: string;
     isPace: boolean;
     canRemove: boolean;
     onChange: (field: keyof ZoneRow, value: string) => void;
@@ -361,40 +357,35 @@ function ZoneRowEditor({
                 )}
             </div>
             <div className="flex flex-col gap-2">
-                <FormField label="Name" error={errors?.name}>
+                <FormField label="Name" required error={errors?.name}>
                     <Input
                         value={row.name}
-                        placeholder="e.g. Zone 1, Easy, Threshold"
                         onChange={(e) => onChange('name', e.target.value)}
                     />
                 </FormField>
                 <div className="flex gap-2">
-                    <FormField label="Min" error={errors?.min}>
+                    <FormField label="Min" required error={errors?.min}>
                         {isPace ? (
                             <PaceInput
                                 value={row.min}
-                                placeholder={placeholder}
                                 onChange={(val) => onChange('min', val)}
                             />
                         ) : (
                             <Input
                                 value={row.min}
-                                placeholder={placeholder}
                                 onChange={(e) => onChange('min', e.target.value)}
                             />
                         )}
                     </FormField>
-                    <FormField label="Max" error={errors?.max}>
+                    <FormField label="Max" required error={errors?.max}>
                         {isPace ? (
                             <PaceInput
                                 value={row.max}
-                                placeholder={placeholder}
                                 onChange={(val) => onChange('max', val)}
                             />
                         ) : (
                             <Input
                                 value={row.max}
-                                placeholder={placeholder}
                                 onChange={(e) => onChange('max', e.target.value)}
                             />
                         )}

@@ -128,15 +128,14 @@ export function ProfilePage() {
             </header>
 
             <main className="flex flex-col gap-6 px-6 py-8 max-w-sm mx-auto w-full">
-                <FormField label="Name" error={errors.name}>
+                <FormField label="Name" required error={errors.name}>
                     <Input
                         value={name}
                         onChange={(e) => { setName(e.target.value); setSaved(false); }}
-                        placeholder="Your name"
                     />
                 </FormField>
 
-                <FormField label="Gender" error={errors.gender}>
+                <FormField label="Gender" required error={errors.gender}>
                     <div className="flex flex-col gap-2">
                         {genderOptions.map((opt) => (
                             <button
@@ -155,7 +154,7 @@ export function ProfilePage() {
                     </div>
                 </FormField>
 
-                <FormField label="Birthday" error={errors.birthday}>
+                <FormField label="Birthday" required error={errors.birthday}>
                     <Input
                         type="date"
                         value={birthday}
@@ -171,7 +170,6 @@ export function ProfilePage() {
                         step="0.1"
                         value={weight}
                         onChange={(e) => { setWeight(e.target.value); setSaved(false); }}
-                        placeholder="e.g. 70"
                     />
                 </FormField>
 
@@ -182,7 +180,6 @@ export function ProfilePage() {
                         step="1"
                         value={height}
                         onChange={(e) => { setHeight(e.target.value); setSaved(false); }}
-                        placeholder="e.g. 175"
                     />
                 </FormField>
 
