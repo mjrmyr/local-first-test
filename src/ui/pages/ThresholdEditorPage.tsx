@@ -161,7 +161,6 @@ export function ThresholdEditorPage({ isEditing, discipline: paramDiscipline, me
     }
 
     const currentMetric = metric as Metric;
-    const valuePlaceholder = currentMetric === 'pace' ? 'e.g. 4:30' : currentMetric === 'power' ? 'e.g. 280' : 'e.g. 165';
     const valueHint = currentMetric === 'pace' ? 'Enter as mm:ss per km' : '';
 
     return (
@@ -180,7 +179,7 @@ export function ThresholdEditorPage({ isEditing, discipline: paramDiscipline, me
 
             <main className="flex flex-col gap-6 px-6 py-8 max-w-lg mx-auto w-full">
                 {/* Discipline selector — locked when editing */}
-                <FormField label="Discipline" error={disciplineError}>
+                <FormField label="Discipline" required error={disciplineError}>
                     <div className="flex gap-2">
                         {availableDisciplines.map((opt) => (
                             <button
@@ -202,7 +201,7 @@ export function ThresholdEditorPage({ isEditing, discipline: paramDiscipline, me
 
                 {/* Metric selector — locked when editing */}
                 {discipline && (
-                    <FormField label="Metric" error={metricError}>
+                    <FormField label="Metric" required error={metricError}>
                         <div className="flex gap-2">
                             {availableMetrics.map((m) => (
                                 <button
@@ -226,11 +225,10 @@ export function ThresholdEditorPage({ isEditing, discipline: paramDiscipline, me
                 {/* Value input */}
                 {metric && (
                     <>
-                        <FormField label="Threshold Value" error={valueError}>
+                        <FormField label="Threshold Value" required error={valueError}>
                             {currentMetric === 'pace' ? (
                                 <PaceInput
                                     value={rawValue}
-                                    placeholder={valuePlaceholder}
                                     onChange={(val) => {
                                         setRawValue(val);
                                         setValueError('');
@@ -240,7 +238,6 @@ export function ThresholdEditorPage({ isEditing, discipline: paramDiscipline, me
                             ) : (
                                 <Input
                                     value={rawValue}
-                                    placeholder={valuePlaceholder}
                                     onChange={(e) => {
                                         setRawValue(e.target.value);
                                         setValueError('');

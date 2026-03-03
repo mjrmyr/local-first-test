@@ -139,10 +139,9 @@ function NameStep({
                 <h2 className="text-2xl font-bold text-foreground">What's your name?</h2>
                 <p className="mt-1 text-sm text-muted">Step 1 of 3</p>
             </div>
-            <FormField label="Name" error={error}>
+            <FormField label="Name" required error={error}>
                 <Input
                     autoFocus
-                    placeholder="e.g. Alex"
                     value={value}
                     onChange={(e) => onChange(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && onNext()}
@@ -225,7 +224,7 @@ function BirthdayStep({
                 <h2 className="text-2xl font-bold text-foreground">When were you born?</h2>
                 <p className="mt-1 text-sm text-muted">Step 3 of 3</p>
             </div>
-            <FormField label="Birthday" error={error}>
+            <FormField label="Birthday" required error={error}>
                 <Input
                     type="date"
                     value={value}
