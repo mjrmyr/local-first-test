@@ -15,15 +15,17 @@ const cacheLast = async (request) => {
         const networkResponse = await fetch(request);
         if (networkResponse && networkResponse.ok) {
             await putInCache(request, networkResponse.clone());
+            return networkResponse;
         }
-        return networkResponse;
-    } catch (error) {
-        const cachedResponse = await cache.match(request);
-        if (cachedResponse) {
-            return cachedResponse;
-        }
-        return new Response('Offline', { status: 503, statusText: 'Service Unavailable' });
+    } catch (_) {
+        // network unavailable — fall through to cache
     }
+
+    const cachedResponse = await cache.match(request);
+    if (cachedResponse) {
+        return cachedResponse;
+    }
+    return new Response('Offline', { status: 503, statusText: 'Service Unavailable' });
 }
 
 const extractManifestResources = async () => {
