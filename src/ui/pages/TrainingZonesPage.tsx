@@ -104,7 +104,7 @@ export function TrainingZonesPage() {
     }
 
     return (
-        <div className="flex min-h-screen flex-col bg-canvas">
+        <div className="flex flex-col bg-canvas">
             <header className="flex items-center gap-3 px-6 py-4 border-b border-navy/10">
                 <button
                     onClick={() => navigate(-1)}
