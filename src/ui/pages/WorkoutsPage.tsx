@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { workoutService } from '../../application/workoutService';
 import type { Workout } from '../../domain/models/workout';
 import type { Discipline } from '../../domain/types';
@@ -43,7 +42,6 @@ type ViewState =
     | { mode: 'edit'; id: string };
 
 export function WorkoutsPage() {
-    const navigate = useNavigate();
     const [workouts, setWorkouts] = useState<Workout[]>([]);
     const [loading, setLoading] = useState(true);
     const [loadError, setLoadError] = useState('');
@@ -107,14 +105,8 @@ export function WorkoutsPage() {
     }
 
     return (
-        <div className="flex min-h-screen flex-col bg-canvas">
+        <div className="flex flex-col bg-canvas">
             <header className="flex items-center gap-3 px-6 py-4 border-b border-navy/10">
-                <button
-                    onClick={() => navigate(-1)}
-                    className="text-sm font-medium text-muted hover:text-foreground"
-                >
-                    ← Back
-                </button>
                 <h1 className="text-lg font-bold text-foreground">Workout Library</h1>
             </header>
 

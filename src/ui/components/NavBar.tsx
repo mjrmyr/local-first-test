@@ -4,20 +4,19 @@ import { AnalyticsIcon, CalendarIcon, HomeIcon, SettingsIcon } from '../icons';
 const navItems = [
     { label: 'Home', to: '/', icon: <HomeIcon /> },
     { label: 'Calendar', to: '/calendar', icon: <CalendarIcon /> },
-    { label: 'Analytics', to: '/analytics', icon: <AnalyticsIcon /> },
+    { label: 'Workouts', to: '/workouts', icon: <AnalyticsIcon /> },
     { label: 'Settings', to: '/settings', icon: <SettingsIcon /> },
 ];
 
 function getActiveItem(pathname: string): string {
     if (pathname === '/') return '/';
     if (pathname.startsWith('/calendar')) return '/calendar';
-    if (pathname.startsWith('/analytics')) return '/analytics';
+    if (pathname.startsWith('/workouts')) return '/workouts';
     if (
         pathname.startsWith('/settings') ||
         pathname.startsWith('/profile') ||
         pathname.startsWith('/training-zones') ||
-        pathname.startsWith('/thresholds') ||
-        pathname.startsWith('/workouts')
+        pathname.startsWith('/thresholds')
     )
         return '/settings';
     return '/';

@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { Navigate, Outlet, Route, Routes } from 'react-router-dom';
 import { athleteService } from './application/athleteService';
 import { Layout } from './ui/components/Layout';
-import { AnalyticsPage } from './ui/pages/AnalyticsPage';
 import { CalendarPage } from './ui/pages/CalendarPage';
 import { HomePage } from './ui/pages/HomePage';
 import { OnboardingPage } from './ui/pages/OnboardingPage';
@@ -63,7 +62,6 @@ function App() {
             >
                 <Route path="/" element={<HomePage />} />
                 <Route path="/calendar" element={<CalendarPage />} />
-                <Route path="/analytics" element={<AnalyticsPage />} />
                 <Route path="/settings" element={<SettingsPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/training-zones" element={<TrainingZonesPage />} />
