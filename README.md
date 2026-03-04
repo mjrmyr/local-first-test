@@ -13,8 +13,7 @@ kaeno unterstützt Ausdauersportler dabei, ihr Training eigenständig zu planen,
 - Trainingseinheiten planen und protokollieren
 - Wiederverwendbare Workout-Vorlagen erstellen und verwalten
 - Trainingszonen je Disziplin und Metrik definieren
-- Schwellenwerte (Laktatschwelle, Herzfrequenz, Leistung) verfolgen
-- Gesundheitsdaten (Gewicht) über die Zeit tracken
+- Schwellenwerte (Laktatschwelle, Herzfrequenz, Leistung) pflegen
 
 **Prinzipien:**
 
@@ -55,6 +54,20 @@ Enthält alle Geschäftsregeln und Datenmodelle, unabhängig von Frameworks und 
 - `types.ts` – Gemeinsame Typen (`Discipline`, `Metric`, `Gender` usw.)
 - `entities.ts` – Basis-Interfaces (`EntityMetadata`, `SoftDeletable`, `Result<T>`)
 
+### Designentscheidung: `SoftDeletable` und Historisierung
+
+Bestimmte Entitäten implementieren das `SoftDeletable`-Interface (`deleted: 0 | 1`) und bieten eine `getHistory()`-Methode an. Betroffen sind:
+
+- **`Threshold`** (`thresholdService.getHistory`) – Verlauf der Leistungsschwellenwerte je Disziplin und Metrik
+- **`TrainingZones`** (`trainingZoneService.getHistory`) – Verlauf der Trainingszonen-Sets je Disziplin und Metrik
+- **`Athlete`** (`athleteService.getHistory`) – Verlauf der Profiländerungen (z. B. Gewichtsentwicklung)
+
+Beim „Löschen" oder Überschreiben eines Werts wird der bisherige Datensatz nicht physisch entfernt, sondern als `deleted = 1` markiert und in der Datenbank behalten. So bleibt die vollständige Änderungshistorie erhalten.
+
+**Ziel dieser Entscheidung** war es, die Grundlage für eine künftige Analyse-Funktion zu schaffen: Athleten sollen ihre Leistungsentwicklung (z. B. FTP-Verlauf, Pace-Schwelle, Herzfrequenzzonen) und Gesundheitsdaten (Gewicht) über die Zeit nachverfolgen können.
+
+> **Hinweis:** Die Historisierung ist als Datenschicht vollständig implementiert, wird in der App aber derzeit nicht genutzt, da das Analytics-Feature noch aussteht.
+
 #### `src/application/`
 Orchestriert Anwendungsfälle: validiert DTOs, ruft Repositories auf und gibt typsichere `Result<T>`-Werte zurück. Wirft niemals Exceptions nach außen.
 
@@ -82,10 +95,8 @@ Die App verwendet React Router mit einer flachen Routing-Strategie:
 |---|---|
 | `/onboarding` | Einrichtungsassistent (nur beim ersten Start) |
 | `/` | Startseite – Kalenderansicht mit Trainingseinheiten |
-| `/sessions/new` | Neue Trainingseinheit erfassen |
-| `/sessions/:id` | Detailansicht einer Einheit |
-| `/sessions/:id/edit` | Einheit bearbeiten |
 | `/workouts` | Workout-Bibliothek |
+| `/calendar` | Kalender |
 | `/thresholds` | Schwellenwerte |
 | `/training-zones` | Trainingszonen |
 | `/profile` | Athletenprofil |
