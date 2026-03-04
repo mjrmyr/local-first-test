@@ -210,7 +210,6 @@ npm install
 | `npm run build` | Produktions-Build erstellen (`dist/`) |
 | `npm run preview` | Produktions-Build lokal vorschauen |
 | `npm run test` | Unit-Tests einmalig ausführen |
-| `npm run test:ui` | Tests mit interaktiver Vitest-UI ausführen |
 | `npm run lint` | ESLint-Prüfung ausführen |
 
 ### Entwicklungsserver starten
