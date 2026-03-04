@@ -39,7 +39,7 @@ beforeEach(() => {
 
 describe('thresholdService.create', () => {
     it('returns ok on valid input with no existing threshold', async () => {
-        mockedRepo.getActive.mockResolvedValue(undefined as any);
+        mockedRepo.getActive.mockResolvedValue(undefined);
         mockedRepo.create.mockResolvedValue(mockThreshold);
         const result = await thresholdService.create(validDTO);
         expect(result).toEqual({ ok: true, data: mockThreshold });
@@ -73,7 +73,7 @@ describe('thresholdService.getActive', () => {
     });
 
     it('returns ok with null when not found', async () => {
-        mockedRepo.getActive.mockResolvedValue(undefined as any);
+        mockedRepo.getActive.mockResolvedValue(undefined);
         const result = await thresholdService.getActive('run', 'pace');
         expect(result).toEqual({ ok: true, data: null });
     });
@@ -112,7 +112,7 @@ describe('thresholdService.update', () => {
     });
 
     it('returns error when no active threshold', async () => {
-        mockedRepo.getActive.mockResolvedValue(undefined as any);
+        mockedRepo.getActive.mockResolvedValue(undefined);
         const result = await thresholdService.update('run', 'pace', updateDTO);
         expect(result).toEqual({ ok: false, error: 'No active threshold found for this discipline/metric' });
     });
@@ -121,13 +121,13 @@ describe('thresholdService.update', () => {
 describe('thresholdService.delete', () => {
     it('returns ok on success', async () => {
         mockedRepo.getActive.mockResolvedValue(mockThreshold);
-        mockedRepo.softDelete.mockResolvedValue(undefined as any);
+        mockedRepo.softDelete.mockResolvedValue(undefined);
         const result = await thresholdService.delete('run', 'pace');
         expect(result).toEqual({ ok: true, data: undefined });
     });
 
     it('returns error when no active threshold', async () => {
-        mockedRepo.getActive.mockResolvedValue(undefined as any);
+        mockedRepo.getActive.mockResolvedValue(undefined);
         const result = await thresholdService.delete('run', 'pace');
         expect(result).toEqual({ ok: false, error: 'No active threshold found' });
     });

@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { validateSession } from '@/domain/rules/validateSession';
 import type { CreateSessionDTO } from '@/domain/models/session';
+import type { Discipline } from '@/domain/types';
 
 const validDTO: CreateSessionDTO = {
     name: 'Morning Run',
@@ -32,7 +33,7 @@ describe('validateSession', () => {
     });
 
     it('requires discipline', () => {
-        const result = validateSession({ ...validDTO, discipline: '' as any });
+        const result = validateSession({ ...validDTO, discipline: '' as Discipline});
         expect(result?.discipline).toBe('Discipline is required');
     });
 
@@ -58,12 +59,12 @@ describe('validateSession', () => {
         expect(validateSession(validDTO)).toBeNull();
     });
 
-    it('allows null totalDuration and totalDistance', () => {
-        expect(validateSession({ ...validDTO, totalDuration: null as any, totalDistance: null as any })).toBeNull();
+    it('allows undefined totalDuration and totalDistance', () => {
+        expect(validateSession({ ...validDTO, totalDuration: undefined, totalDistance: undefined })).toBeNull();
     });
 
     it('returns multiple errors', () => {
-        const result = validateSession({ name: '', date: '', discipline: '' as any });
+        const result = validateSession({ name: '', date: '', discipline: '' as Discipline });
         expect(result?.name).toBeDefined();
         expect(result?.date).toBeDefined();
         expect(result?.discipline).toBeDefined();

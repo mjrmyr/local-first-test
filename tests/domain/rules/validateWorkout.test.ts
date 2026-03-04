@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { validateWorkout } from '@/domain/rules/validateWorkout';
 import type { CreateWorkoutDTO, WorkoutStep } from '@/domain/models/workout';
+import type { Discipline, WorkoutStepMetric, WorkoutStepType, WorkoutStepUnit } from '@/domain/types';
 
 const validStep: WorkoutStep = {
     name: 'Warmup',
@@ -39,7 +40,7 @@ describe('validateWorkout', () => {
     });
 
     it('requires discipline', () => {
-        expect(validateWorkout({ ...validDTO, discipline: '' as any })?.discipline).toBe('Discipline is required');
+        expect(validateWorkout({ ...validDTO, discipline: '' as Discipline })?.discipline).toBe('Discipline is required');
     });
 
     it('rejects zero totalDuration', () => {
@@ -60,7 +61,7 @@ describe('validateWorkout', () => {
     });
 
     it('validates step type', () => {
-        const result = validateWorkout({ ...validDTO, steps: [{ ...validStep, type: '' as any }] });
+        const result = validateWorkout({ ...validDTO, steps: [{ ...validStep, type: '' as WorkoutStepType }] });
         expect(result?.stepErrors?.[0]?.type).toBe('Step type is required');
     });
 
@@ -87,12 +88,12 @@ describe('validateWorkout', () => {
     });
 
     it('validates step metric', () => {
-        const result = validateWorkout({ ...validDTO, steps: [{ ...validStep, metric: '' as any }] });
+        const result = validateWorkout({ ...validDTO, steps: [{ ...validStep, metric: '' as WorkoutStepMetric }] });
         expect(result?.stepErrors?.[0]?.metric).toBe('Metric is required');
     });
 
     it('validates step unit', () => {
-        const result = validateWorkout({ ...validDTO, steps: [{ ...validStep, unit: '' as any }] });
+        const result = validateWorkout({ ...validDTO, steps: [{ ...validStep, unit: '' as WorkoutStepUnit }] });
         expect(result?.stepErrors?.[0]?.unit).toBe('Unit is required');
     });
 
@@ -108,7 +109,7 @@ describe('validateWorkout', () => {
     });
 
     it('validates step value is required', () => {
-        const result = validateWorkout({ ...validDTO, steps: [{ ...validStep, value: undefined as any }] });
+        const result = validateWorkout({ ...validDTO, steps: [{ ...validStep, value: undefined as unknown as number }] });
         expect(result?.stepErrors?.[0]?.value).toBe('Value is required');
     });
 

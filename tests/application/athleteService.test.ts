@@ -69,7 +69,7 @@ describe('athleteService.getActive', () => {
     });
 
     it('returns ok with null when no active athlete', async () => {
-        mockedRepo.getActive.mockResolvedValue(undefined as any);
+        mockedRepo.getActive.mockResolvedValue(undefined);
         const result = await athleteService.getActive();
         expect(result).toEqual({ ok: true, data: null });
     });
@@ -93,7 +93,7 @@ describe('athleteService.update', () => {
     });
 
     it('returns error when no active athlete', async () => {
-        mockedRepo.getActive.mockResolvedValue(undefined as any);
+        mockedRepo.getActive.mockResolvedValue(undefined);
         const result = await athleteService.update(updateDTO);
         expect(result).toEqual({ ok: false, error: 'No active athlete found' });
     });

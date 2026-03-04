@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { validateThreshold } from '@/domain/rules/validateThreshold';
 import type { CreateThresholdDTO } from '@/domain/models/threshold';
+import type { Discipline, Metric } from '@/domain/types';
 
 const validDTO: CreateThresholdDTO = {
     discipline: 'run',
@@ -14,11 +15,11 @@ describe('validateThreshold', () => {
     });
 
     it('requires discipline', () => {
-        expect(validateThreshold({ ...validDTO, discipline: '' as any })?.discipline).toBe('Discipline is required');
+        expect(validateThreshold({ ...validDTO, discipline: '' as Discipline })?.discipline).toBe('Discipline is required');
     });
 
     it('requires metric', () => {
-        expect(validateThreshold({ ...validDTO, metric: '' as any })?.metric).toBe('Metric is required');
+        expect(validateThreshold({ ...validDTO, metric: '' as Metric })?.metric).toBe('Metric is required');
     });
 
     it('rejects invalid metric for discipline (swim + power)', () => {
@@ -45,7 +46,7 @@ describe('validateThreshold', () => {
     });
 
     it('requires value', () => {
-        expect(validateThreshold({ ...validDTO, value: undefined as any })?.value).toBe('Value is required');
+        expect(validateThreshold({ ...validDTO, value: undefined as unknown as number})?.value).toBe('Value is required');
     });
 
     it('rejects NaN value', () => {
@@ -61,7 +62,7 @@ describe('validateThreshold', () => {
     });
 
     it('returns multiple errors', () => {
-        const result = validateThreshold({ discipline: '' as any, metric: '' as any, value: NaN });
+        const result = validateThreshold({ discipline: '' as Discipline, metric: '' as Metric, value: NaN });
         expect(result?.discipline).toBeDefined();
         expect(result?.metric).toBeDefined();
         expect(result?.value).toBeDefined();

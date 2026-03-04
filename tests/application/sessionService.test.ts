@@ -66,7 +66,7 @@ describe('sessionService.getById', () => {
     });
 
     it('returns ok with null when not found', async () => {
-        mockedRepo.getById.mockResolvedValue(undefined as any);
+        mockedRepo.getById.mockResolvedValue(undefined);
         const result = await sessionService.getById('999');
         expect(result).toEqual({ ok: true, data: null });
     });
@@ -124,7 +124,7 @@ describe('sessionService.update', () => {
     });
 
     it('returns error when session not found', async () => {
-        mockedRepo.getById.mockResolvedValue(undefined as any);
+        mockedRepo.getById.mockResolvedValue(undefined);
         const result = await sessionService.update('999', updateDTO);
         expect(result).toEqual({ ok: false, error: 'Session not found' });
     });
@@ -139,13 +139,13 @@ describe('sessionService.update', () => {
 describe('sessionService.delete', () => {
     it('returns ok on success', async () => {
         mockedRepo.getById.mockResolvedValue(mockSession);
-        mockedRepo.delete.mockResolvedValue(undefined as any);
+        mockedRepo.delete.mockResolvedValue(undefined);
         const result = await sessionService.delete('1');
         expect(result).toEqual({ ok: true, data: undefined });
     });
 
     it('returns error when session not found', async () => {
-        mockedRepo.getById.mockResolvedValue(undefined as any);
+        mockedRepo.getById.mockResolvedValue(undefined);
         const result = await sessionService.delete('999');
         expect(result).toEqual({ ok: false, error: 'Session not found' });
     });

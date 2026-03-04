@@ -45,7 +45,7 @@ beforeEach(() => {
 
 describe('trainingZoneService.create', () => {
     it('returns ok on valid input with no existing zones', async () => {
-        mockedRepo.getActive.mockResolvedValue(undefined as any);
+        mockedRepo.getActive.mockResolvedValue(undefined);
         mockedRepo.create.mockResolvedValue(mockZones);
         const result = await trainingZoneService.create(validDTO);
         expect(result).toEqual({ ok: true, data: mockZones });
@@ -79,7 +79,7 @@ describe('trainingZoneService.getActive', () => {
     });
 
     it('returns ok with null when not found', async () => {
-        mockedRepo.getActive.mockResolvedValue(undefined as any);
+        mockedRepo.getActive.mockResolvedValue(undefined);
         const result = await trainingZoneService.getActive('run', 'hr');
         expect(result).toEqual({ ok: true, data: null });
     });
@@ -112,7 +112,7 @@ describe('trainingZoneService.update', () => {
     });
 
     it('returns error when no active zone set', async () => {
-        mockedRepo.getActive.mockResolvedValue(undefined as any);
+        mockedRepo.getActive.mockResolvedValue(undefined);
         const result = await trainingZoneService.update('run', 'hr', updateDTO);
         expect(result).toEqual({ ok: false, error: 'No active zone set found for this discipline/metric' });
     });
@@ -121,13 +121,13 @@ describe('trainingZoneService.update', () => {
 describe('trainingZoneService.delete', () => {
     it('returns ok on success', async () => {
         mockedRepo.getActive.mockResolvedValue(mockZones);
-        mockedRepo.softDelete.mockResolvedValue(undefined as any);
+        mockedRepo.softDelete.mockResolvedValue(undefined);
         const result = await trainingZoneService.delete('run', 'hr');
         expect(result).toEqual({ ok: true, data: undefined });
     });
 
     it('returns error when no active zone set', async () => {
-        mockedRepo.getActive.mockResolvedValue(undefined as any);
+        mockedRepo.getActive.mockResolvedValue(undefined);
         const result = await trainingZoneService.delete('run', 'hr');
         expect(result).toEqual({ ok: false, error: 'No active zone set found' });
     });

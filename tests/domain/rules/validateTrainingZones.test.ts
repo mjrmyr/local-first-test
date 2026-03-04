@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { validateTrainingZones } from '@/domain/rules/validateTrainingZones';
 import type { CreateTrainingZonesDTO } from '@/domain/models/trainingZone';
+import type { Discipline, Metric } from '@/domain/types';
 
 const hrZones: CreateTrainingZonesDTO = {
     discipline: 'run',
@@ -32,11 +33,11 @@ describe('validateTrainingZones', () => {
     });
 
     it('requires discipline', () => {
-        expect(validateTrainingZones({ ...hrZones, discipline: '' as any })?.discipline).toBe('Discipline is required');
+        expect(validateTrainingZones({ ...hrZones, discipline: '' as Discipline })?.discipline).toBe('Discipline is required');
     });
 
     it('requires metric', () => {
-        expect(validateTrainingZones({ ...hrZones, metric: '' as any })?.metric).toBe('Metric is required');
+        expect(validateTrainingZones({ ...hrZones, metric: '' as Metric })?.metric).toBe('Metric is required');
     });
 
     it('requires at least one zone', () => {
@@ -60,7 +61,7 @@ describe('validateTrainingZones', () => {
     it('requires zone min', () => {
         const result = validateTrainingZones({
             ...hrZones,
-            zones: [{ name: 'Z1', min: undefined as any, max: 120 }],
+            zones: [{ name: 'Z1', min: undefined as unknown as number, max: 120 }],
         });
         expect(result?.zoneErrors?.[0]?.min).toBe('Min is required');
     });

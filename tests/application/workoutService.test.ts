@@ -72,7 +72,7 @@ describe('workoutService.getById', () => {
     });
 
     it('returns ok with null when not found', async () => {
-        mockedRepo.getById.mockResolvedValue(undefined as any);
+        mockedRepo.getById.mockResolvedValue(undefined);
         const result = await workoutService.getById('999');
         expect(result).toEqual({ ok: true, data: null });
     });
@@ -111,7 +111,7 @@ describe('workoutService.update', () => {
     });
 
     it('returns error when workout not found', async () => {
-        mockedRepo.getById.mockResolvedValue(undefined as any);
+        mockedRepo.getById.mockResolvedValue(undefined);
         const result = await workoutService.update('999', updateDTO);
         expect(result).toEqual({ ok: false, error: 'Workout not found' });
     });
@@ -120,13 +120,13 @@ describe('workoutService.update', () => {
 describe('workoutService.delete', () => {
     it('returns ok on success', async () => {
         mockedRepo.getById.mockResolvedValue(mockWorkout);
-        mockedRepo.delete.mockResolvedValue(undefined as any);
+        mockedRepo.delete.mockResolvedValue(undefined);
         const result = await workoutService.delete('1');
         expect(result).toEqual({ ok: true, data: undefined });
     });
 
     it('returns error when workout not found', async () => {
-        mockedRepo.getById.mockResolvedValue(undefined as any);
+        mockedRepo.getById.mockResolvedValue(undefined);
         const result = await workoutService.delete('999');
         expect(result).toEqual({ ok: false, error: 'Workout not found' });
     });
