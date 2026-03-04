@@ -69,12 +69,12 @@ export function SessionEditorPage({
     const [totalDistance, setTotalDistance] = useState('');
     const [note, setNote] = useState('');
     const [steps, setSteps] = useState<WorkoutStep[]>([]);
+    const [workoutId, setWorkoutId] = useState<string | undefined>(undefined);
 
     const [errors, setErrors] = useState<SessionErrors>({});
     const [submitError, setSubmitError] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const [loading, setLoading] = useState(isEditing);
-    const [fromWorkout, setFromWorkout] = useState(false);
     const [collapsedStepIndexes, setCollapsedStepIndexes] = useState<Set<number>>(new Set());
 
     // Workout picker
@@ -99,6 +99,7 @@ export function SessionEditorPage({
                 setTotalDistance(s.totalDistance ? String(s.totalDistance) : '');
                 setNote(s.note ?? '');
                 setSteps(s.steps ?? []);
+                setWorkoutId(s.workoutId);
             } else {
                 setSubmitError('Failed to load session');
             }
@@ -118,7 +119,7 @@ export function SessionEditorPage({
             setSteps([]);
             setCollapsedStepIndexes(new Set());
         }
-        setFromWorkout(true);
+        setWorkoutId(workout.id);
         setShowWorkoutPicker(false);
     }
 
@@ -176,6 +177,7 @@ export function SessionEditorPage({
             totalDistance: parsedDistance,
             note: note.trim() || undefined,
             steps: steps.length > 0 ? steps : undefined,
+            workoutId,
         };
     }
 
@@ -287,13 +289,13 @@ export function SessionEditorPage({
                             <button
                                 key={opt.value}
                                 type="button"
-                                disabled={fromWorkout}
+                                disabled={!!workoutId}
                                 onClick={() => { setDiscipline(opt.value); setErrors((p) => ({ ...p, discipline: undefined })); }}
                                 className={`flex-1 rounded-xl border-2 px-3 py-2.5 text-sm font-medium transition-colors ${
                                     discipline === opt.value
                                         ? 'border-primary bg-primary/10 text-primary-dark'
                                         : 'border-navy/10 bg-surface text-foreground hover:border-navy/15'
-                                } ${fromWorkout ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                } ${workoutId ? 'opacity-50 cursor-not-allowed' : ''}`}
                             >
                                 {opt.label}
                             </button>

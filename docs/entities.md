@@ -126,6 +126,7 @@ interface Session extends EntityMetadata {
     totalDistance?: number;
     note?: string;
     steps?: WorkoutStep[];
+    workoutId?: string;    // source workout ID, if created from a template
 }
 ```
 

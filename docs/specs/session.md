@@ -14,6 +14,7 @@ interface Session extends EntityMetadata {
     totalDistance?: number; // kilometers
     note?: string;
     steps?: WorkoutStep[];  // inherited or manually set
+    workoutId?: string;     // source workout ID, if created from a template
 }
 ```
 
@@ -25,8 +26,9 @@ See [entities.md](../entities.md) for `EntityMetadata` and `WorkoutStep`. See [t
 2. `name` is required and must be non-empty.
 3. `discipline` is required.
 4. `steps` are optional. A session without steps is valid (just a scheduled block of time).
-5. When a session is created from a Workout, it copies the workout's `name`, `discipline`, `totalDuration`, `totalDistance`, and `steps`. These copies are independent — editing the session does not affect the source workout and vice versa.
-6. `totalDuration` and `totalDistance` must be positive numbers when provided.
+5. When a session is created from a Workout, it copies the workout's `name`, `discipline`, `totalDuration`, `totalDistance`, and `steps`. The source workout's `id` is stored in `workoutId`. These copies are independent — editing the session does not affect the source workout and vice versa.
+6. When `workoutId` is set, the session's `discipline` is locked and cannot be changed by the user.
+7. `totalDuration` and `totalDistance` must be positive numbers when provided.
 
 ## Operations
 

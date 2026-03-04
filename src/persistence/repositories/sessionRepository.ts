@@ -16,6 +16,7 @@ export const sessionRepository = {
             totalDistance: dto.totalDistance,
             note: dto.note,
             steps: dto.steps,
+            workoutId: dto.workoutId,
         };
         await db.sessions.add(record);
         return record;
@@ -46,6 +47,7 @@ export const sessionRepository = {
             totalDistance: dto.totalDistance,
             note: dto.note,
             steps: dto.steps,
+            workoutId: dto.workoutId,
             updatedAt: now,
         });
         const updated = await db.sessions.get(id);
