@@ -1,10 +1,10 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { AnalyticsIcon, CalendarIcon, HomeIcon, SettingsIcon } from '../icons';
+import { CalendarIcon, HomeIcon, LibraryIcon, SettingsIcon } from '../icons';
 
 const navItems = [
     { label: 'Home', to: '/', icon: <HomeIcon /> },
     { label: 'Calendar', to: '/calendar', icon: <CalendarIcon /> },
-    { label: 'Workouts', to: '/workouts', icon: <AnalyticsIcon /> },
+    { label: 'Workouts', to: '/workouts', icon: <LibraryIcon /> },
     { label: 'Settings', to: '/settings', icon: <SettingsIcon /> },
 ];
 

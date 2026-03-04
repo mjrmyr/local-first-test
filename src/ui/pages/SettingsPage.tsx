@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { AnalyticsIcon, HomeIcon, SettingsIcon } from '../icons';
+import { AnalyticsIcon, RunningIcon, UserIcon } from '../icons';
 
 type SettingsOption = {
     label: string;
@@ -13,7 +13,7 @@ const options: SettingsOption[] = [
         label: 'General',
         description: 'Personal info, weight, height',
         to: '/profile',
-        icon: <HomeIcon className="size-5" />,
+        icon: <UserIcon className="size-5" />,
     },
     {
         label: 'Training Zones',
@@ -25,7 +25,7 @@ const options: SettingsOption[] = [
         label: 'Thresholds',
         description: 'FTP, lactate threshold and CSS values',
         to: '/thresholds',
-        icon: <SettingsIcon className="size-5" />,
+        icon: <RunningIcon className="size-5" />,
     },
 ];
 
