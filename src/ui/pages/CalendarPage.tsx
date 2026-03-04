@@ -181,7 +181,7 @@ export function CalendarPage() {
                     </div>
                     {/* Desktop split panel: editor or detail */}
                     {editingSession ? (
-                        <div className="w-[400px] shrink-0 overflow-y-auto">
+                        <div className="w-100 shrink-0 overflow-y-auto">
                             <SessionEditorPage
                                 id={editingSession.mode === 'edit' ? editingSession.id : undefined}
                                 initialDate={editingSession.mode === 'new' ? editingSession.date : undefined}
@@ -190,7 +190,7 @@ export function CalendarPage() {
                             />
                         </div>
                     ) : viewingSession ? (
-                        <div className="w-[400px] shrink-0 overflow-y-auto">
+                        <div className="w-100 shrink-0 overflow-y-auto">
                             <SessionDetailPage
                                 id={viewingSession.id}
                                 onBack={() => setViewState(null)}
@@ -274,7 +274,7 @@ function DesktopHeader({
                     >
                         ‹
                     </button>
-                    <span className="text-sm font-medium text-foreground min-w-[140px] text-center">
+                    <span className="text-sm font-medium text-foreground min-w-35 text-center">
                         {view === 'month'
                             ? formatMonthYear(anchor)
                             : `${formatDayMonth(startOfWeek(anchor))} – ${formatDayMonth(addDays(startOfWeek(anchor), 6))}`}
@@ -335,9 +335,9 @@ function ListView({
     sessions: Session[];
     onSelect: (id: string) => void;
     onAddOnDate: (date: string) => void;
-    scrollToTodayRef?: React.MutableRefObject<(() => void) | null>;
+    scrollToTodayRef?: React.RefObject<(() => void) | null>;
 }) {
-    const today = new Date();
+    const today = useMemo(() => new Date(), []);
     const todayStr = toDateString(today);
 
     const [pastDays, setPastDays] = useState(INITIAL_PAST_DAYS);
@@ -362,7 +362,7 @@ function ListView({
             result.push(toDateString(addDays(start, i)));
         }
         return result;
-    }, [pastDays, futureDays]);
+    }, [pastDays, futureDays, today]);
 
     const todayRef = useRef<HTMLDivElement>(null);
     const topSentinelRef = useRef<HTMLDivElement>(null);
@@ -531,7 +531,7 @@ function WeekView({
                     return (
                         <div
                             key={dateStr}
-                            className="flex flex-col gap-1 p-1 border-r border-navy/5 last:border-r-0 min-h-[200px]"
+                            className="flex flex-col gap-1 p-1 border-r border-navy/5 last:border-r-0 min-h-50"
                         >
                             {daySessions.map((s) => (
                                 <button
@@ -596,7 +596,7 @@ function MonthView({
                     return (
                         <div
                             key={dateStr}
-                            className={`flex flex-col border-r border-b border-navy/5 last:border-r-0 p-1 min-h-[80px] ${
+                            className={`flex flex-col border-r border-b border-navy/5 last:border-r-0 p-1 min-h-20 ${
                                 inMonth ? '' : 'opacity-40'
                             }`}
                         >
