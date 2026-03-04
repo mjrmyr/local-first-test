@@ -69,11 +69,13 @@ export function SessionEditorPage({
     const [totalDistance, setTotalDistance] = useState('');
     const [note, setNote] = useState('');
     const [steps, setSteps] = useState<WorkoutStep[]>([]);
+    const [workoutId, setWorkoutId] = useState<string | undefined>(undefined);
 
     const [errors, setErrors] = useState<SessionErrors>({});
     const [submitError, setSubmitError] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const [loading, setLoading] = useState(isEditing);
+    const [collapsedStepIndexes, setCollapsedStepIndexes] = useState<Set<number>>(new Set());
 
     // Workout picker
     const [workouts, setWorkouts] = useState<Workout[]>([]);
@@ -97,6 +99,7 @@ export function SessionEditorPage({
                 setTotalDistance(s.totalDistance ? String(s.totalDistance) : '');
                 setNote(s.note ?? '');
                 setSteps(s.steps ?? []);
+                setWorkoutId(s.workoutId);
             } else {
                 setSubmitError('Failed to load session');
             }
@@ -109,7 +112,14 @@ export function SessionEditorPage({
         setDiscipline(workout.discipline);
         if (workout.totalDuration) setTotalDuration(String(workout.totalDuration));
         if (workout.totalDistance) setTotalDistance(String(workout.totalDistance));
-        if (workout.steps?.length) setSteps(workout.steps.map((s) => ({ ...s })));
+        if (workout.steps?.length) {
+            setSteps(workout.steps.map((s) => ({ ...s })));
+            setCollapsedStepIndexes(new Set(workout.steps.map((_, i) => i)));
+        } else {
+            setSteps([]);
+            setCollapsedStepIndexes(new Set());
+        }
+        setWorkoutId(workout.id);
         setShowWorkoutPicker(false);
     }
 
@@ -119,14 +129,39 @@ export function SessionEditorPage({
 
     function removeStep(index: number) {
         setSteps((prev) => prev.filter((_, i) => i !== index));
+        setCollapsedStepIndexes((prev) => {
+            const next = new Set<number>();
+            prev.forEach((v) => {
+                if (v < index) next.add(v);
+                if (v > index) next.add(v - 1);
+            });
+            return next;
+        });
     }
 
     function moveStep(index: number, direction: 'up' | 'down') {
+        const target = direction === 'up' ? index - 1 : index + 1;
         setSteps((prev) => {
             const next = [...prev];
-            const target = direction === 'up' ? index - 1 : index + 1;
             if (target < 0 || target >= next.length) return prev;
             [next[index], next[target]] = [next[target], next[index]];
+            return next;
+        });
+        setCollapsedStepIndexes((prev) => {
+            if (target < 0 || target >= steps.length) return prev;
+            const next = new Set(prev);
+            const fromCollapsed = next.has(index);
+            const toCollapsed = next.has(target);
+            if (fromCollapsed) next.add(target); else next.delete(target);
+            if (toCollapsed) next.add(index); else next.delete(index);
+            return next;
+        });
+    }
+
+    function toggleStepCollapsed(index: number) {
+        setCollapsedStepIndexes((prev) => {
+            const next = new Set(prev);
+            if (next.has(index)) next.delete(index); else next.add(index);
             return next;
         });
     }
@@ -142,6 +177,7 @@ export function SessionEditorPage({
             totalDistance: parsedDistance,
             note: note.trim() || undefined,
             steps: steps.length > 0 ? steps : undefined,
+            workoutId,
         };
     }
 
@@ -253,12 +289,13 @@ export function SessionEditorPage({
                             <button
                                 key={opt.value}
                                 type="button"
+                                disabled={!!workoutId}
                                 onClick={() => { setDiscipline(opt.value); setErrors((p) => ({ ...p, discipline: undefined })); }}
                                 className={`flex-1 rounded-xl border-2 px-3 py-2.5 text-sm font-medium transition-colors ${
                                     discipline === opt.value
                                         ? 'border-primary bg-primary/10 text-primary-dark'
                                         : 'border-navy/10 bg-surface text-foreground hover:border-navy/15'
-                                }`}
+                                } ${workoutId ? 'opacity-50 cursor-not-allowed' : ''}`}
                             >
                                 {opt.label}
                             </button>
@@ -293,7 +330,27 @@ export function SessionEditorPage({
 
                 {/* Steps */}
                 <section>
-                    <h2 className="text-base font-semibold text-foreground mb-3">Steps</h2>
+                    <div className="mb-3 flex items-center justify-between">
+                        <h2 className="text-base font-semibold text-foreground">Steps</h2>
+                        {steps.length > 0 && (
+                            <div className="flex items-center gap-3">
+                                <button
+                                    type="button"
+                                    onClick={() => setCollapsedStepIndexes(new Set())}
+                                    className="text-xs font-medium text-muted hover:text-foreground"
+                                >
+                                    Expand all
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => setCollapsedStepIndexes(new Set(steps.map((_, i) => i)))}
+                                    className="text-xs font-medium text-muted hover:text-foreground"
+                                >
+                                    Collapse all
+                                </button>
+                            </div>
+                        )}
+                    </div>
 
                     {steps.length > 0 && (
                         <div className="flex flex-col gap-4">
@@ -303,6 +360,8 @@ export function SessionEditorPage({
                                     step={step}
                                     index={index}
                                     total={steps.length}
+                                    collapsed={collapsedStepIndexes.has(index)}
+                                    onToggleCollapsed={() => toggleStepCollapsed(index)}
                                     onChange={(update) => updateStep(index, update)}
                                     onRemove={() => removeStep(index)}
                                     onMove={(dir) => moveStep(index, dir)}
@@ -313,7 +372,14 @@ export function SessionEditorPage({
 
                     <button
                         type="button"
-                        onClick={() => setSteps((prev) => [...prev, emptyStep()])}
+                        onClick={() => {
+                            setSteps((prev) => [...prev, emptyStep()]);
+                            setCollapsedStepIndexes((prev) => {
+                                const next = new Set(prev);
+                                next.delete(steps.length);
+                                return next;
+                            });
+                        }}
                         className="mt-4 w-full text-sm font-medium text-primary hover:text-primary-dark"
                     >
                         + Add Step
@@ -334,6 +400,8 @@ function SessionStepEditor({
     step,
     index,
     total,
+    collapsed,
+    onToggleCollapsed,
     onChange,
     onRemove,
     onMove,
@@ -341,6 +409,8 @@ function SessionStepEditor({
     step: WorkoutStep;
     index: number;
     total: number;
+    collapsed: boolean;
+    onToggleCollapsed: () => void;
     onChange: (update: Partial<WorkoutStep>) => void;
     onRemove: () => void;
     onMove: (direction: 'up' | 'down') => void;
@@ -356,7 +426,20 @@ function SessionStepEditor({
     return (
         <div className="rounded-xl border border-navy/10 bg-surface p-4 flex flex-col gap-3">
             <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-muted">Step {index + 1}</span>
+                <button
+                    type="button"
+                    onClick={onToggleCollapsed}
+                    className="flex items-center gap-2 text-xs font-semibold text-muted hover:text-foreground"
+                >
+                    <svg
+                        className={`h-3.5 w-3.5 transition-transform ${collapsed ? '' : 'rotate-90'}`}
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                    >
+                        <path fillRule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clipRule="evenodd" />
+                    </svg>
+                    <span>Step {index + 1}{step.name ? ` — ${step.name}` : ''}</span>
+                </button>
                 <div className="flex items-center gap-2">
                     {index > 0 && (
                         <button type="button" onClick={() => onMove('up')} className="text-xs text-muted hover:text-foreground">↑</button>
@@ -368,6 +451,8 @@ function SessionStepEditor({
                 </div>
             </div>
 
+            {!collapsed && (
+            <>
             <FormField label="Step Name" required>
                 <Input
                     value={step.name}
@@ -462,6 +547,8 @@ function SessionStepEditor({
                     rows={2}
                 />
             </FormField>
+            </>
+            )}
         </div>
     );
 }
