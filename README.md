@@ -221,6 +221,14 @@ npm run dev
 
 Die App ist anschließend unter `http://localhost:5173` erreichbar.
 
+### Produktion-Preview starten
+
+```bash
+npm run preview
+```
+
+Die App ist anschließend unter `http://localhost:4173` erreichbar.
+
 ### Tests ausführen
 
 ```bash
