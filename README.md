@@ -1,12 +1,12 @@
-# kaeno
+# Local-first Test Application 
 
-kaeno ist eine Progressive Web App (PWA) für Ausdauersportler zur Trainingsplanung und -verwaltung.
+Diese App ist eine Progressive Web App (PWA) für Ausdauersportler zur Trainingsplanung und -verwaltung.
 
 ---
 
 ## Zweck und Anwendungsfall
 
-kaeno unterstützt Ausdauersportler dabei, ihr Training eigenständig zu planen, zu dokumentieren und auszuwerten – vollständig lokal auf dem eigenen Gerät, ohne Konto und ohne Internetverbindung.
+Diese App unterstützt Ausdauersportler dabei, ihr Training eigenständig zu planen, zu dokumentieren und auszuwerten – vollständig lokal auf dem eigenen Gerät, ohne Konto und ohne Internetverbindung.
 
 **Kernfunktionen:**
 
